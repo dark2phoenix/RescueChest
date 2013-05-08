@@ -1,0 +1,20 @@
+[
+{
+  "modid": "RescueChest",
+  "name": "Rescue Chest",
+  "description": "Save your items when you die!",
+  "version": "@VERSION@",
+  "url": "https://github.com/dark2phoenix/RescueChest",
+  "updateUrl": "",
+  "authorList": [
+    "dark2phoenix"
+  ],
+  "credits": "dark2phoenix, based on SavePoint Chest by bigdre88ap",
+  "logoFile": "/mods/rescuechest/logo/dark2phoenixlogo.png",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]
