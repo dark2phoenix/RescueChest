@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -79,7 +80,7 @@ public class EventHookContainerClass {
 			}
 			 
 			// Player has a configured inventory, let's get going
-			if (worldName != null && dyingPlayer.worldObj.getWorldInfo().getWorldName().equals(worldName) && chestLocation != null && playerName != null) {
+			if (worldName != null && worldName.equals(dyingPlayer.worldObj.getWorldInfo().getWorldName()) && chestLocation != null && playerName != null) {
 
 				int x = (Integer) chestLocation[0];
 				int y = (Integer) chestLocation[1];
@@ -134,36 +135,44 @@ public class EventHookContainerClass {
 	private void addItemsToInventory(EntityPlayer dyingPlayer, TileEntityRescueChest activeChest, ItemStack[] playerInventory, String playerInventoryName) {
 		String sourceMethod = "addItemsToInventory";
 				
-		logger.entering(sourceMethod, sourceMethod, new Object[] { dyingPlayer, activeChest, playerInventory, playerInventoryName });
+		logger.entering(sourceClass, sourceMethod, new Object[] { dyingPlayer, activeChest, playerInventory, playerInventoryName });
+		logger.logp(Level.INFO, sourceClass, sourceClass, String.format("Processing player %s inventory", playerInventoryName));
+		logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Player Inventory contains %d items, Rescue Chest has only %d", playerInventory.length, activeChest.getSizeInventory()));
 
-		logger.logp(Level.INFO, sourceMethod, sourceClass, String.format("Processing player %s inventory", playerInventoryName));
-		if (activeChest.getSizeInventory() > playerInventory.length) {
-			logger.logp(Level.INFO, sourceMethod, sourceMethod, String.format("Player Inventory contains %d items, Rescue Chest has only %d", playerInventory.length, activeChest.getSizeInventory()));
-		}
-
+        // Must be a better way to do this, but I don't know how to get the Slot information without
+        // creating a new container and matching it up
+        ContainerRescueChest chestContainer = new ContainerRescueChest( dyingPlayer.inventory, activeChest, true);
+        
 		for (int playerInventorySlot = 0; playerInventorySlot < playerInventory.length; playerInventorySlot++) {
-			logger.logp(Level.INFO, sourceMethod, sourceMethod, String.format("Processing Player Inventory Slot %d", playerInventorySlot));
+			logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Processing Player Inventory %s Slot %d", playerInventoryName, playerInventorySlot));
 
 			if (playerInventory[playerInventorySlot] == null) {
-				logger.logp(Level.INFO, sourceMethod, sourceMethod, String.format("Player Inventory Slot is null, continuing on"));
+				logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Player Inventory %s, Slot %d is null, continuing on", playerInventoryName, playerInventorySlot));
 				continue;
 			}
-			logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Player Inventory %d contains %d of %s", playerInventorySlot, playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
-
-			logger.logp(Level.INFO, sourceMethod, sourceMethod, String.format("Processing Chest Inventory for %d of %s in player inventory", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
-			boolean cannotProcessItem = false;
+			logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Player Inventory %s, Slot %d contains %d of %s", playerInventoryName, playerInventorySlot, playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
+            logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Processing RescueChest Inventory for %d of %s in player inventory", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
+            boolean canPlaceItem = false;
 			for (int chestInventorySlot = 0; chestInventorySlot < activeChest.getSizeInventory(); chestInventorySlot++) {
 				if (activeChest.getStackInSlot(chestInventorySlot) == null) {
-					logger.logp(Level.INFO, sourceMethod, sourceMethod, String.format("Moving %d of %s from Player Inventory to chest slot %d", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName(), chestInventorySlot));
-					activeChest.setInventorySlotContents(chestInventorySlot, playerInventory[playerInventorySlot].copy());
-					break;
+				    Slot currentSlot = chestContainer.getSlot(chestInventorySlot);
+                    if ( currentSlot.isItemValid(playerInventory[playerInventorySlot]) ) {
+                        logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Moving %d of %s from Player Inventory to chest slot %d", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName(), chestInventorySlot));
+                        activeChest.setInventorySlotContents(chestInventorySlot, playerInventory[playerInventorySlot].copy());
+                        canPlaceItem = true;
+                        break;
+                    }
+                    else {
+                        logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Cannot Move %s from Player Inventory to chest slot %d because it is not valid for that slot", playerInventory[playerInventorySlot].getDisplayName(), chestInventorySlot));
+                    }
 				}
 				else {
-					logger.logp(Level.INFO, sourceMethod, sourceMethod, String.format("Skipping chest slot %d because it contains %d of %s", chestInventorySlot, activeChest.getStackInSlot(chestInventorySlot).stackSize, activeChest.getStackInSlot(chestInventorySlot).getDisplayName()));
-					cannotProcessItem = true;
+				    logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Skipping Resue Chest slot %d because it contains %d of %s", chestInventorySlot, activeChest.getStackInSlot(chestInventorySlot).stackSize, activeChest.getStackInSlot(chestInventorySlot).getDisplayName()));
 				}
 			}
-			logger.logp(Level.INFO, playerInventoryName, sourceMethod, String.format("Dropping %d of %s of playerInventory because chest inventory is full", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
+			if (! canPlaceItem) {
+			    logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Dropping %d of %s of playerInventory because chest inventory is full", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
+			}
 		}
 	}
 }

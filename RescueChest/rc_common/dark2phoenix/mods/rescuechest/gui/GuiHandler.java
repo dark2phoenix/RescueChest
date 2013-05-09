@@ -14,7 +14,7 @@ public class GuiHandler implements IGuiHandler {
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
 		TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityRescueChest) {
-			return new ContainerRescueChest(player.inventory, (TileEntityRescueChest) tileEntity);
+			return new ContainerRescueChest(player.inventory, (TileEntityRescueChest) tileEntity, false);
 		}
 		return null;
 	}

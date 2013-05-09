@@ -44,10 +44,16 @@ public class ContainerRescueChest extends Container {
 	 * Total number of slots the container holds
 	 */
 	private final int totalNumberofSlots = rows * slotsPerRow;
-
-	public ContainerRescueChest(InventoryPlayer inventoryPlayer, TileEntityRescueChest te) {
+	
+	/**
+	 * Rescue Chest Container.  Defines the slots and interaction with the inventory of the Rescue Chest.
+	 * @param inventoryPlayer Player Inventory
+	 * @param te RescueChest Tile Inventory
+	 * @param checkSlotsOnly Is this instance of Container going to be used by a player/GUI or just being called
+	 * to validate the slots
+	 */
+	public ContainerRescueChest(InventoryPlayer inventoryPlayer, TileEntityRescueChest te, boolean checkSlotsOnly) {
 		tileEntityRescueChest = te;
-		tileEntityRescueChest.openChest();
 
 		// Armor Inventory
 		addSlotToContainer(new SlotArmor(te, 0 + 0 * slotsPerRow, 12 + 0 * 18, 8 + 0 * 18, ArmorSlots.HELMET ));
@@ -70,10 +76,6 @@ public class ContainerRescueChest extends Container {
 
 		}
 
-		
-		
-		
-		
 		// Bottom of the Display 
 		
 		// Player Inventory
@@ -89,6 +91,9 @@ public class ContainerRescueChest extends Container {
 		for (int hotbarSlot = 0; hotbarSlot < 9; hotbarSlot++) {
 			addSlotToContainer(new Slot(inventoryPlayer, hotbarSlot, leftCol + hotbarSlot * 18, containerHeight - 24));
 		}
+ 		if (! checkSlotsOnly ) {
+	      tileEntityRescueChest.openChest();
+ 		}
 	}
 
 	@Override

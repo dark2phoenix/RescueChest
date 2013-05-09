@@ -32,7 +32,7 @@ public class ClientProxy extends CommonProxy {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         TileEntity te = world.getBlockTileEntity(x, y, z);
         if (te != null && te instanceof TileEntityRescueChest) {
-            return new ContainerRescueChest(player.inventory, (TileEntityRescueChest) te);
+            return new ContainerRescueChest(player.inventory, (TileEntityRescueChest) te, false);
         } else {
             return null;
         }

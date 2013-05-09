@@ -29,7 +29,7 @@ public class CommonProxy implements IGuiHandler {
 		TileEntity te = world.getBlockTileEntity(X, Y, Z);
 		if (te != null && te instanceof TileEntityRescueChest) {
 			TileEntityRescueChest spcte = (TileEntityRescueChest) te;
-			return new ContainerRescueChest(player.inventory, spcte);
+			return new ContainerRescueChest(player.inventory, spcte, false);
 		}
 		else {
 			return null;

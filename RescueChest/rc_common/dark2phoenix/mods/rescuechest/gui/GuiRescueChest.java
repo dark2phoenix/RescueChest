@@ -13,7 +13,7 @@ public class GuiRescueChest extends GuiContainer {
 
 	public GuiRescueChest(InventoryPlayer inventoryPlayer, TileEntityRescueChest tileEntity) {
 		// the container is instantiated and passed to the superclass for handling
-		super(new ContainerRescueChest(inventoryPlayer, tileEntity));
+		super(new ContainerRescueChest(inventoryPlayer, tileEntity, false));
 		this.xSize = 184;
 		this.ySize = 184;
 		this.allowUserInput = false;
