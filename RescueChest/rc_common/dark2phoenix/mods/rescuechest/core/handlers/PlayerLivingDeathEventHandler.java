@@ -100,14 +100,15 @@ public class PlayerLivingDeathEventHandler {
 					return;
 				}
 
+				// Get the items in the player's armor slots
+                ItemStack[] playerArmorInventory = playerInventory.armorInventory;
+                addItemsToInventory(dyingPlayer, activeChest, playerArmorInventory, "Armor");
+                activeChest.updateEntity();
+                dyingPlayer.worldObj.markBlockForUpdate(x, y, z);
+				
 				// Get the items from the player's main Inventory
 				ItemStack[] playerMainInventory = playerInventory.mainInventory;
 				addItemsToInventory(dyingPlayer, activeChest, playerMainInventory, "Main");
-				activeChest.updateEntity();
-				dyingPlayer.worldObj.markBlockForUpdate(x, y, z);
-
-				ItemStack[] playerArmorInventory = playerInventory.armorInventory;
-				addItemsToInventory(dyingPlayer, activeChest, playerArmorInventory, "Armor");
 				activeChest.updateEntity();
 				dyingPlayer.worldObj.markBlockForUpdate(x, y, z);
 
