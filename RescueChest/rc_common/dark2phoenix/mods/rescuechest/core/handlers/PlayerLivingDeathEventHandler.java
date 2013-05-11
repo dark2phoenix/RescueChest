@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest;
+package dark2phoenix.mods.rescuechest.core.handlers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,15 +14,16 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import dark2phoenix.mods.rescuechest.types.ChestLocation;
+import dark2phoenix.mods.rescuechest.core.Constants;
+import dark2phoenix.mods.rescuechest.core.types.ChestLocation;
+import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 import dark2phoenix.mods.rescuechest.RescueChest;
-import dark2phoenix.mods.rescuechest.TileEntityRescueChest;
-import dark2phoenix.mods.rescuechest.Constants;
 
 /**
  * Name and cast of this class are irrelevant
  */
-public class EventHookContainerClass {
+public class PlayerLivingDeathEventHandler {
 	/**
 	 * The key is the @ForgeSubscribe annotation and the cast of the Event you put
 	 * in as argument. The method name you pick does not matter. Method signature
@@ -152,14 +153,14 @@ public class EventHookContainerClass {
 			}
 			logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Player Inventory %s, Slot %d contains %d of %s", playerInventoryName, playerInventorySlot, playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
             logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Processing RescueChest Inventory for %d of %s in player inventory", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
-            boolean canPlaceItem = false;
+            boolean placedItem = false;
 			for (int chestInventorySlot = 0; chestInventorySlot < activeChest.getSizeInventory(); chestInventorySlot++) {
 				if (activeChest.getStackInSlot(chestInventorySlot) == null) {
 				    Slot currentSlot = chestContainer.getSlot(chestInventorySlot);
                     if ( currentSlot.isItemValid(playerInventory[playerInventorySlot]) ) {
                         logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Moving %d of %s from Player Inventory to chest slot %d", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName(), chestInventorySlot));
                         activeChest.setInventorySlotContents(chestInventorySlot, playerInventory[playerInventorySlot].copy());
-                        canPlaceItem = true;
+                        placedItem = true;
                         break;
                     }
                     else {
@@ -170,7 +171,7 @@ public class EventHookContainerClass {
 				    logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Skipping Resue Chest slot %d because it contains %d of %s", chestInventorySlot, activeChest.getStackInSlot(chestInventorySlot).stackSize, activeChest.getStackInSlot(chestInventorySlot).getDisplayName()));
 				}
 			}
-			if (! canPlaceItem) {
+			if (! placedItem) {
 			    logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Dropping %d of %s of playerInventory because chest inventory is full", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
 			}
 		}

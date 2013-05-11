@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest;
+package dark2phoenix.mods.rescuechest.tileentity;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,8 +19,10 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     private String      sourceClass = this.getClass().getName();
 
+    /** Array of items the chest can hold **/
     private ItemStack[] inv;
 
+    /** Direction the chest is currently facing **/
     private byte        facing;
 
     /** The current angle of the lid (between 0 and 1) */
@@ -242,7 +244,7 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         return true;
     }
 
-    void rotateAround(ForgeDirection axis) {
+    public void rotateAround(ForgeDirection axis) {
         setFacing((byte) ForgeDirection.getOrientation(facing).getRotation(axis).ordinal());
         worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 2, getFacing());
     }

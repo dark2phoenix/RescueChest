@@ -7,11 +7,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
-import dark2phoenix.mods.rescuechest.ContainerRescueChest;
-import dark2phoenix.mods.rescuechest.TileEntityRescueChest;
 import dark2phoenix.mods.rescuechest.client.RescueChestRenderHelper;
-import dark2phoenix.mods.rescuechest.client.TileEntityRescuePointChestRenderer;
+import dark2phoenix.mods.rescuechest.client.renderer.TileEntityRescueChestRenderer;
 import dark2phoenix.mods.rescuechest.core.proxy.CommonProxy;
+import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class ClientProxy extends CommonProxy {
 
@@ -21,7 +21,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     public void registerTileEntitySpecialRenderer() {
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRescueChest.class, new TileEntityRescuePointChestRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRescueChest.class, new TileEntityRescueChestRenderer());
     }
 
     public World getClientWorld() {

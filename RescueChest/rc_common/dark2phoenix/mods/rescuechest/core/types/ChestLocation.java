@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest.types;
+package dark2phoenix.mods.rescuechest.core.types;
 
 
 public class ChestLocation {

@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest;
+package dark2phoenix.mods.rescuechest.block;
 
 import static net.minecraftforge.common.ForgeDirection.DOWN;
 import static net.minecraftforge.common.ForgeDirection.UP;
@@ -26,6 +26,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dark2phoenix.mods.rescuechest.RescueChest;
+import dark2phoenix.mods.rescuechest.core.Constants;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class BlockRescueChest extends BlockContainer {
 

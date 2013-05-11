@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest;
+package dark2phoenix.mods.rescuechest.inventory;
 
 import java.util.logging.Logger;
 
@@ -8,9 +8,11 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import dark2phoenix.mods.rescuechest.Constants.ArmorSlots;
-import dark2phoenix.mods.rescuechest.gui.SlotArmor;
-import dark2phoenix.mods.rescuechest.gui.SlotHotBar;
+import dark2phoenix.mods.rescuechest.RescueChest;
+import dark2phoenix.mods.rescuechest.core.Constants.ArmorSlots;
+import dark2phoenix.mods.rescuechest.gui.slot.SlotArmor;
+import dark2phoenix.mods.rescuechest.gui.slot.SlotHotBar;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class ContainerRescueChest extends Container {
 	

@@ -5,9 +5,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 
 import org.lwjgl.opengl.GL11;
 
-import dark2phoenix.mods.rescuechest.ContainerRescueChest;
 import dark2phoenix.mods.rescuechest.RescueChest;
-import dark2phoenix.mods.rescuechest.TileEntityRescueChest;
+import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class GuiRescueChest extends GuiContainer {
 

@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest.client;
+package dark2phoenix.mods.rescuechest.client.renderer;
 
 import java.util.Random;
 import java.util.logging.Logger;
@@ -18,12 +18,12 @@ import com.google.common.primitives.SignedBytes;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dark2phoenix.mods.rescuechest.ModelRescueChest;
 import dark2phoenix.mods.rescuechest.RescueChest;
-import dark2phoenix.mods.rescuechest.TileEntityRescueChest;
+import dark2phoenix.mods.rescuechest.model.ModelRescueChest;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 @SideOnly(Side.CLIENT)
-public class TileEntityRescuePointChestRenderer extends TileEntitySpecialRenderer {
+public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
 	
   private Random random;
 
@@ -32,7 +32,7 @@ public class TileEntityRescuePointChestRenderer extends TileEntitySpecialRendere
   private RenderItem itemRenderer;
 	
 	
-	public TileEntityRescuePointChestRenderer() {
+	public TileEntityRescueChestRenderer() {
 		super();
 		itemRenderer = new RenderItem() {
       @Override

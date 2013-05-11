@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest;
+package dark2phoenix.mods.rescuechest.core;
 
 import java.util.Properties;
 
@@ -9,10 +9,8 @@ public class Version {
     private static String build;
     private static String mcversion;
 
-    static void init(Properties properties)
-    {
-        if (properties != null)
-        {
+    public static void init(Properties properties) {
+        if (properties != null) {
             major = properties.getProperty("RescueChest.build.major.number");
             minor = properties.getProperty("RescueChest.build.minor.number");
             rev = properties.getProperty("RescueChest.build.revision.number");
@@ -21,8 +19,7 @@ public class Version {
         }
     }
 
-    public static String fullVersionString()
-    {
-        return String.format("%s.%s.%s build %s", major, minor, rev, build);
+    public static String fullVersionString() {
+        return String.format("%s.%s.%s build %s on %s", major, minor, rev, build, mcversion);
     }
 }

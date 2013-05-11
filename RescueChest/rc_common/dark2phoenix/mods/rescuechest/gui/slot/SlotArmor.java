@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest.gui;
+package dark2phoenix.mods.rescuechest.gui.slot;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dark2phoenix.mods.rescuechest.Constants.ArmorSlots;
+import dark2phoenix.mods.rescuechest.core.Constants.ArmorSlots;
 import dark2phoenix.mods.rescuechest.RescueChest;
 
 public class SlotArmor extends Slot {

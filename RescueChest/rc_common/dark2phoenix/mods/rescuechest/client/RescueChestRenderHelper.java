@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import com.google.common.collect.Maps;
 
 import dark2phoenix.mods.rescuechest.RescueChest;
-import dark2phoenix.mods.rescuechest.TileEntityRescueChest;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class RescueChestRenderHelper extends ChestItemRenderHelper {
     private Map<Integer, TileEntityRescueChest> itemRenders = Maps.newHashMap();

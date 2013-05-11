@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest.gui;
+package dark2phoenix.mods.rescuechest.gui.slot;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,9 +8,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dark2phoenix.mods.rescuechest.BlockRescueChest;
-import dark2phoenix.mods.rescuechest.HotbarItem;
 import dark2phoenix.mods.rescuechest.RescueChest;
+import dark2phoenix.mods.rescuechest.block.BlockRescueChest;
+import dark2phoenix.mods.rescuechest.item.ItemHotBar;
 
 public class SlotHotBar extends Slot {
 
@@ -49,7 +49,7 @@ public class SlotHotBar extends Slot {
      */
     public Icon getBackgroundIconIndex() {
         String sourceMethod = "getBackgroundIconIndex()";
-        Icon icon = HotbarItem.getHotbarIcon( (isActive) ? 0 : 1 ); 
+        Icon icon = ItemHotBar.getHotbarIcon( (isActive) ? 0 : 1 ); 
         logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("Icon name is %s",  icon.getIconName()));
         return icon;
     }

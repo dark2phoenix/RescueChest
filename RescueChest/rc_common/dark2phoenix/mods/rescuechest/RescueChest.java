@@ -28,10 +28,15 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import dark2phoenix.mods.rescuechest.client.TileEntityRescuePointChestRenderer;
+import dark2phoenix.mods.rescuechest.block.BlockRescueChest;
+import dark2phoenix.mods.rescuechest.client.renderer.TileEntityRescueChestRenderer;
+import dark2phoenix.mods.rescuechest.core.Version;
+import dark2phoenix.mods.rescuechest.core.handlers.PlayerLivingDeathEventHandler;
 import dark2phoenix.mods.rescuechest.core.proxy.CommonProxy;
 import dark2phoenix.mods.rescuechest.gui.GuiHandler;
+import dark2phoenix.mods.rescuechest.item.ItemHotBar;
 import dark2phoenix.mods.rescuechest.lib.Reference;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 @Mod(modid = "RescueChest", name = "Rescue Chest", version = "0.0.1")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
@@ -103,7 +108,7 @@ public class RescueChest {
 
 		proxy.registerRenderInformation();
 		proxy.registerTileEntitySpecialRenderer();
-		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRescueChest.class, new TileEntityRescuePointChestRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRescueChest.class, new TileEntityRescueChestRenderer());
 
 		NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
 
@@ -113,7 +118,7 @@ public class RescueChest {
 
 		// Register custom events
 		MinecraftForge.EVENT_BUS.register(this);
-		MinecraftForge.EVENT_BUS.register(new EventHookContainerClass());
+		MinecraftForge.EVENT_BUS.register(new PlayerLivingDeathEventHandler());
 	}
 
 	public RescueChest() {
@@ -128,7 +133,7 @@ public class RescueChest {
     @SuppressWarnings("unchecked")
 	@PostInit
 	public void postInit(FMLPostInitializationEvent event) {
-	    hotbarItem = new HotbarItem(hotbarItemId).setUnlocalizedName("hotbarItem");
+	    hotbarItem = new ItemHotBar(hotbarItemId).setUnlocalizedName("hotbarItem");
         LanguageRegistry.addName(hotbarItem, "Hotbar Item");
 
         

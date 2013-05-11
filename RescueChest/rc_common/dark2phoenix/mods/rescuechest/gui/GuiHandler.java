@@ -4,9 +4,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.network.IGuiHandler;
-import dark2phoenix.mods.rescuechest.ContainerRescueChest;
-import dark2phoenix.mods.rescuechest.TileEntityRescueChest;
 import dark2phoenix.mods.rescuechest.gui.GuiRescueChest;
+import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
+import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class GuiHandler implements IGuiHandler {
 	// returns an instance of the Container
