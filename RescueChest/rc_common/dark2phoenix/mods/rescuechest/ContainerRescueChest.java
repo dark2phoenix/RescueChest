@@ -60,21 +60,21 @@ public class ContainerRescueChest extends Container {
 		addSlotToContainer(new SlotArmor(te, 1 + 0 * slotsPerRow, 12 + 1 * 18, 8 + 0 * 18, ArmorSlots.CHEST_PLATE ));
 		addSlotToContainer(new SlotArmor(te, 2 + 0 * slotsPerRow, 12 + 2 * 18, 8 + 0 * 18, ArmorSlots.GREAVES ));
 		addSlotToContainer(new SlotArmor(te, 3 + 0 * slotsPerRow, 12 + 3 * 18, 8 + 0 * 18, ArmorSlots.BOOTS ));
-		
-		// Hot Bar Inventory
-		int hotBotRow = 1;
-		for (int chestCol = 0; chestCol < slotsPerRow; chestCol++) {
-			addSlotToContainer(new SlotHotBar(te, chestCol + hotBotRow * slotsPerRow, 12 + chestCol * 18, 8 + hotBotRow * 18, false));
-		}
 
+	      // Hot Bar Inventory
+        int hotBotRow = 1;
+        for (int chestCol = 0; chestCol < slotsPerRow; chestCol++) {
+            addSlotToContainer(new SlotHotBar(te, chestCol + hotBotRow * slotsPerRow, 12 + chestCol * 18, 8 + hotBotRow * 18, false));
+        }
 		
 		// Chest Inventory
-		for (int chestRow = 2; chestRow < rows; chestRow++) {
-			for (int chestCol = 0; chestCol < slotsPerRow; chestCol++) {
-				addSlotToContainer(new Slot(te, chestCol + chestRow * slotsPerRow, 12 + chestCol * 18, 8 + chestRow * 18));
-			}
+        for (int chestRow = 2; chestRow < rows; chestRow++) {
+            for (int chestCol = 0; chestCol < slotsPerRow; chestCol++) {
+                addSlotToContainer(new Slot(te, chestCol + chestRow * slotsPerRow, 12 + chestCol * 18, 8 + chestRow * 18));
+            }
 
-		}
+        }
+		
 
 		// Bottom of the Display 
 		

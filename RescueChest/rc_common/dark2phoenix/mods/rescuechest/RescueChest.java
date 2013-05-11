@@ -1,5 +1,7 @@
 package dark2phoenix.mods.rescuechest;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,8 +44,11 @@ public class RescueChest {
 	String sourceClass = this.getClass().getName();
 	
 	private int rescueChestBlockId;
-
+	public int hotbarItemId;
+	
 	public static Block rescueChestBlock;
+	
+    public static Item hotbarItem;
 
 	/**
 	 * Instance of the mod used by Forge
@@ -51,6 +56,9 @@ public class RescueChest {
 	@Instance("RescueChest")
 	public static RescueChest instance;
 
+	
+	
+	
 	/**
 	 * Forge Proxy Information
 	 */
@@ -67,6 +75,7 @@ public class RescueChest {
 		try {
 			cfg.load();
 			rescueChestBlockId = cfg.getBlock("RescueChest", 501).getInt(501);
+			hotbarItemId = cfg.getItem("HotbarItem", 29775).getInt(29775);
 			logger.logp(Level.FINE, sourceClass, sourceMethod, "Rescue Chest Block ID is " + rescueChestBlockId);
 		}
 		catch (Exception e) {
@@ -78,7 +87,7 @@ public class RescueChest {
 		logger.exiting(sourceClass, sourceMethod);
 	}
 
-	@SuppressWarnings("unchecked")
+
     @Init
 	public void load(FMLInitializationEvent event) {
 
@@ -86,6 +95,8 @@ public class RescueChest {
 		
 		rescueChestBlock = new BlockRescueChest(rescueChestBlockId, BlockRescueChest.material );
 //		rescueChestBlock.setBlockName("rescueChest");
+		
+
 
 		GameRegistry.registerBlock(rescueChestBlock, "rescueChest");
 		GameRegistry.registerTileEntity(TileEntityRescueChest.class, "rescueChest");
@@ -99,12 +110,6 @@ public class RescueChest {
 		// Define our ore dictionary resources so other variations of these elements will work
 		OreDictionary.registerOre("plankWood", new ItemStack(Block.planks));
 		OreDictionary.registerOre("ingotGold", new ItemStack(Item.ingotGold));
-
-		// Recipes to add
-		CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(rescueChestBlock), true, new Object[] { "PPP", "PGP", "PPP", Character.valueOf('P'), "plankWood", Character.valueOf('G'), "ingotGold" }));
-
-		LanguageRegistry.addName(rescueChestBlock, "Rescue Chest");
-		
 
 		// Register custom events
 		MinecraftForge.EVENT_BUS.register(this);
@@ -120,9 +125,30 @@ public class RescueChest {
 
 	}
 
+    @SuppressWarnings("unchecked")
 	@PostInit
 	public void postInit(FMLPostInitializationEvent event) {
-		// Stub Method
-	}
+	    hotbarItem = new HotbarItem(hotbarItemId).setUnlocalizedName("hotbarItem");
+        LanguageRegistry.addName(hotbarItem, "Hotbar Item");
 
+        
+        // Define our ore dictionary resources so other variations of these elements will work
+        // OreDictionary.registerOre("plankWood", new ItemStack(Block.planks));
+        // OreDictionary.registerOre("ingotGold", new ItemStack(Item.ingotGold));
+        //        
+        // Define our ore dictionary resources so other variations of these elements will work
+
+        List<String> oreNameList = Arrays.asList( OreDictionary.getOreNames() );
+        
+        if ( ! oreNameList.contains("plankWood") ) {
+            OreDictionary.registerOre("plankWood", new ItemStack(Block.planks));
+        }
+        if ( ! oreNameList.contains("ingotGold") ) {
+            OreDictionary.registerOre("ingotGold", new ItemStack(Item.ingotGold));
+        }
+        
+        // Recipes to add
+        CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(rescueChestBlock), true, new Object[] { "PPP", "PGP", "PPP", Character.valueOf('P'), "plankWood", Character.valueOf('G'), "ingotGold" }));
+        LanguageRegistry.addName(rescueChestBlock, "Rescue Chest");
+	}
 }

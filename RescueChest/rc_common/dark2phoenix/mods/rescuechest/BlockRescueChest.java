@@ -63,11 +63,7 @@ public class BlockRescueChest extends BlockContainer {
     }
     
     
-    private static Icon[] hotbarIcons;
-    
-    public static Icon getHotbarIcon( int offset ) {
-        return hotbarIcons[offset];
-    }
+  
     
     @SideOnly(Side.CLIENT)
     private Icon[] icons;
@@ -76,10 +72,10 @@ public class BlockRescueChest extends BlockContainer {
 
 		super(id, material);
 		this.setHardness(0.5F);
-		this.setUnlocalizedName("Rescue Chest");
 		this.setStepSound(Block.soundWoodFootstep);
-		this.setCreativeTab(CreativeTabs.tabDecorations);
 		this.setBlockBounds(0.0625F, 0F, 0.0625F, 0.9375F, 0.875F, 0.9375F);
+        setCreativeTab(CreativeTabs.tabDecorations);
+
 	}
 
 	@Override
@@ -106,34 +102,17 @@ public class BlockRescueChest extends BlockContainer {
 	 @Override
 	 @SideOnly(Side.CLIENT)
 	 public void registerIcons(IconRegister par1IconRegister) {
+	     
+	     String modName = RescueChest.modid;
+
 	     icons = new Icon[3];
 	     int i = 0;
          for (String s : sideNames) {
-             icons[i++] = par1IconRegister.registerIcon(String.format("%s:%s_%s",RescueChest.modid.toLowerCase(), getName().toLowerCase(), s));
+             icons[i++] = par1IconRegister.registerIcon(String.format("%s:%s_%s", modName, getName(), s));
          }
-//         hotbarIcons[0] = par1IconRegister.registerIcon(String.format("%s:%s", RescueChest.modid.toLowerCase(), "HotbarSlot_Available"));
-//         hotbarIcons[1] = par1IconRegister.registerIcon(String.format("%s:%s", RescueChest.modid.toLowerCase(), "HotbarSlot_NotAvailable"));
+
 	 }
 	 
-//  	@SideOnly(Side.CLIENT)
-//	public int getBlockTexture(IBlockAccess worldAccess, int i, int j, int k, int l) {
-//		int meta = worldAccess.getBlockMetadata(i, j, k);
-//		TileEntity te = worldAccess.getBlockTileEntity(i, j, k);
-//		TileEntityRescueChest icte = null;
-//		if (te != null && te instanceof TileEntityRescueChest) {
-//			icte = (TileEntityRescueChest) te;
-//		}
-//		if (l == 0 || l == 1) { // Top and Bottom
-//			return 0;
-//		}
-//		else if (icte != null && l == icte.getFacing()) { // Front
-//			return 2;
-//		}
-//		else { // Back and Sides
-//			return 1;
-//		}
-//	}
-
 	@SideOnly(Side.CLIENT)
 	public int getBlockTextureFromSideAndMetadata(int i, int j) {
 		switch (i) {
