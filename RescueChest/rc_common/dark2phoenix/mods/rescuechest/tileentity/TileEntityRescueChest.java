@@ -1,9 +1,12 @@
 package dark2phoenix.mods.rescuechest.tileentity;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dark2phoenix.mods.rescuechest.RescueChest;
+import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -11,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.ForgeDirection;
 
 public class TileEntityRescueChest extends TileEntity implements IInventory {
@@ -26,37 +30,44 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     private byte        facing;
 
     /** The current angle of the lid (between 0 and 1) */
-    public float        lidAngle    = 0.0F;
+    float        lidAngle    = 0.0F;
 
     /** The angle of the lid last tick */
-    public float        prevLidAngle;
+    float        prevLidAngle;
 
     /** The number of players currently using this chest */
-    public int          numUsingPlayers;
+    int          numUsingPlayers;
 
     /** Server sync counter (once per 20 ticks) */
     private int         ticksSinceSync;
+
+    /** Has the inventory been manipulated, use for resync */
+    private boolean     inventoryTouched;
+
+    /** Array of the current chest contents */
+    ItemStack[]         chestContents;
 
     public TileEntityRescueChest() {
         inv = new ItemStack[45];
     }
 
+    /**
+     * Called when a player or other entity close's the chest
+     */
     @Override
-    public int getSizeInventory() {
-        return inv.length;
-    }
+    public void closeChest() {
+        String sourceMethod = "closeChest";
+        logger.entering(sourceClass, sourceMethod);
 
-    @Override
-    public ItemStack getStackInSlot(int slot) {
-        return inv[slot];
-    }
-
-    @Override
-    public void setInventorySlotContents(int slot, ItemStack stack) {
-        inv[slot] = stack;
-        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
-            stack.stackSize = getInventoryStackLimit();
+        if (worldObj == null) {
+            logger.logp(Level.FINEST, sourceClass, sourceMethod, "worldObj is null, exiting");
+            logger.exiting(sourceClass, sourceMethod);
+            return;
         }
+
+        numUsingPlayers = (numUsingPlayers-- < 0) ? 0 : numUsingPlayers;
+        logger.logp(Level.FINEST, sourceClass, sourceMethod, "Decrementing numUsingPlayers by 1 to : " + numUsingPlayers);
+        worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 1, numUsingPlayers);
     }
 
     @Override
@@ -75,6 +86,58 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         return stack;
     }
 
+    /**
+     * @return the chestContents
+     */
+    public ItemStack[] getChestContents() {
+        return chestContents;
+    }
+
+    public byte getFacing() {
+        return this.facing;
+    }
+
+    @Override
+    public int getInventoryStackLimit() {
+        return 64;
+    }
+    
+    @Override
+    public String getInvName() {
+        return "dark2phoenix.mods.rescuechest.tileentityrescuechest";
+    }
+
+    /**
+     * @return the lidAngle
+     */
+    public float getLidAngle() {
+        return lidAngle;
+    }
+
+    /**
+     * @return the numUsingPlayers
+     */
+    public int getNumUsingPlayers() {
+        return numUsingPlayers;
+    }
+
+    /**
+     * @return the prevLidAngle
+     */
+    public float getPrevLidAngle() {
+        return prevLidAngle;
+    }
+
+    @Override
+    public int getSizeInventory() {
+        return inv.length;
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int slot) {
+        return inv[slot];
+    }
+
     @Override
     public ItemStack getStackInSlotOnClosing(int slot) {
         ItemStack stack = getStackInSlot(slot);
@@ -85,8 +148,13 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     }
 
     @Override
-    public int getInventoryStackLimit() {
-        return 64;
+    public boolean isInvNameLocalized() {
+        return false;
+    }
+
+    @Override
+    public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+        return true;
     }
 
     @Override
@@ -112,25 +180,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         logger.exiting(sourceClass, sourceMethod);
     }
 
-    /**
-     * Called when a player or other entity close's the chest
-     */
-    @Override
-    public void closeChest() {
-        String sourceMethod = "closeChest";
-        logger.entering(sourceClass, sourceMethod);
-
-        if (worldObj == null) {
-            logger.logp(Level.FINEST, sourceClass, sourceMethod, "worldObj is null, exiting");
-            logger.exiting(sourceClass, sourceMethod);
-            return;
-        }
-
-        numUsingPlayers = (numUsingPlayers-- < 0) ? 0 : numUsingPlayers;
-        logger.logp(Level.FINEST, sourceClass, sourceMethod, "Decrementing numUsingPlayers by 1 to : " + numUsingPlayers);
-        worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 1, numUsingPlayers);
-    }
-
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
@@ -148,29 +197,70 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     }
 
+    /**
+     * Called when a client event is received with the event number and
+     * argument, see World.sendClientEvent
+     */
     @Override
-    public void writeToNBT(NBTTagCompound tagCompound) {
-
-        super.writeToNBT(tagCompound);
-
-        NBTTagList itemList = new NBTTagList();
-        for (int i = 0; i < inv.length; i++) {
-            ItemStack stack = inv[i];
-            if (stack != null) {
-                NBTTagCompound tag = new NBTTagCompound();
-                tag.setByte("Slot", (byte) i);
-                stack.writeToNBT(tag);
-                itemList.appendTag(tag);
-            }
+    public boolean receiveClientEvent(int i, int j) {
+        if (i == 1) {
+            numUsingPlayers = j;
+        } else if (i == 2) {
+            facing = (byte) j;
+        } else if (i == 3) {
+            facing = (byte) (j & 0x7);
+            numUsingPlayers = (j & 0xF8) >> 3;
         }
-        tagCompound.setTag("Inventory", itemList);
-        tagCompound.setByte("facing", facing);
+        return true;
+    }
 
+    public void rotateAround(ForgeDirection axis) {
+        setFacing((byte) ForgeDirection.getOrientation(facing).getRotation(axis).ordinal());
+        worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 2, getFacing());
+    }
+
+    /**
+     * @param chestContents the chestContents to set
+     */
+    public void setChestContents(ItemStack[] chestContents) {
+        this.chestContents = chestContents;
+    }
+
+    public void setFacing(byte chestFacing) {
+        this.facing = chestFacing;
     }
 
     @Override
-    public String getInvName() {
-        return "dark2phoenix.mods.rescuechest.tileentityrescuechest";
+    public void setInventorySlotContents(int slot, ItemStack stack) {
+        inv[slot] = stack;
+        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
+            stack.stackSize = getInventoryStackLimit();
+        }
+    }
+
+    /**
+     * @param lidAngle the lidAngle to set
+     */
+    public void setLidAngle(float lidAngle) {
+        this.lidAngle = lidAngle;
+    }
+
+    public void setMaxStackSize(int size) {
+
+    }
+
+    /**
+     * @param numUsingPlayers the numUsingPlayers to set
+     */
+    public void setNumUsingPlayers(int numUsingPlayers) {
+        this.numUsingPlayers = numUsingPlayers;
+    }
+
+    /**
+     * @param prevLidAngle the prevLidAngle to set
+     */
+    public void setPrevLidAngle(float prevLidAngle) {
+        this.prevLidAngle = prevLidAngle;
     }
 
     /**
@@ -180,17 +270,37 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
      */
     @Override
     public void updateEntity() {
-        String sourceMethod = "updateEntity";
-
         super.updateEntity();
 
-        if ((++ticksSinceSync % 20) * 4 == 0) {
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 3, ((numUsingPlayers << 3) & 0xF8) | (facing & 0x7));
+        if (worldObj != null && !this.worldObj.isRemote && this.numUsingPlayers != 0 && (this.ticksSinceSync + this.xCoord + this.yCoord + this.zCoord) % 200 == 0) {
+            this.numUsingPlayers = 0;
+            float distanceFromChest = 5.0F;
+
+            @SuppressWarnings("rawtypes")
+            List entityList = this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getAABBPool().getAABB((double) ((float) this.xCoord - distanceFromChest), (double) ((float) this.yCoord - distanceFromChest), (double) ((float) this.zCoord - distanceFromChest), (double) ((float) (this.xCoord + 1) + distanceFromChest), (double) ((float) (this.yCoord + 1) + distanceFromChest), (double) ((float) (this.zCoord + 1) + distanceFromChest)));
+            
+            @SuppressWarnings("rawtypes")
+            Iterator entityListIterator = entityList.iterator();
+
+            while (entityListIterator.hasNext()) {
+                EntityPlayer entityPlayer = (EntityPlayer) entityListIterator.next();
+
+                if (entityPlayer.openContainer instanceof ContainerRescueChest) {
+                    ++this.numUsingPlayers;
+                }
+            }
         }
 
+        if (worldObj != null && !worldObj.isRemote && ticksSinceSync < 0) {
+            worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 3, ((numUsingPlayers << 3) & 0xF8) | (facing & 0x7));
+        }
+        if (!worldObj.isRemote && inventoryTouched) {
+            inventoryTouched = false;
+        }
+
+        this.ticksSinceSync++;
         prevLidAngle = lidAngle;
         float f = 0.1F;
-
         if (numUsingPlayers > 0 && lidAngle == 0.0F) {
             double d = (double) xCoord + 0.5D;
             double d1 = (double) zCoord + 0.5D;
@@ -216,51 +326,26 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
                 lidAngle = 0.0F;
             }
         }
-
     }
 
-    public void setFacing(byte chestFacing) {
-        this.facing = chestFacing;
-    }
-
-    public byte getFacing() {
-        return this.facing;
-    }
-
-    /**
-     * Called when a client event is received with the event number and
-     * argument, see World.sendClientEvent
-     */
     @Override
-    public boolean receiveClientEvent(int i, int j) {
-        if (i == 1) {
-            numUsingPlayers = j;
-        } else if (i == 2) {
-            facing = (byte) j;
-        } else if (i == 3) {
-            facing = (byte) (j & 0x7);
-            numUsingPlayers = (j & 0xF8) >> 3;
+    public void writeToNBT(NBTTagCompound tagCompound) {
+
+        super.writeToNBT(tagCompound);
+
+        NBTTagList itemList = new NBTTagList();
+        for (int i = 0; i < inv.length; i++) {
+            ItemStack stack = inv[i];
+            if (stack != null) {
+                NBTTagCompound tag = new NBTTagCompound();
+                tag.setByte("Slot", (byte) i);
+                stack.writeToNBT(tag);
+                itemList.appendTag(tag);
+            }
         }
-        return true;
-    }
+        tagCompound.setTag("Inventory", itemList);
+        tagCompound.setByte("facing", facing);
 
-    public void rotateAround(ForgeDirection axis) {
-        setFacing((byte) ForgeDirection.getOrientation(facing).getRotation(axis).ordinal());
-        worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 2, getFacing());
-    }
-
-    public void setMaxStackSize(int size) {
-
-    }
-
-    @Override
-    public boolean isStackValidForSlot(int i, ItemStack itemstack) {
-        return true;
-    }
-
-    @Override
-    public boolean isInvNameLocalized() {
-        return false;
     }
 
 }

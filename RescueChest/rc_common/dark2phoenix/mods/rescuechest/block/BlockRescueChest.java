@@ -66,9 +66,6 @@ public class BlockRescueChest extends BlockContainer {
         return name;
     }
     
-    
-  
-    
     @SideOnly(Side.CLIENT)
     private Icon[] icons;
 
@@ -305,12 +302,10 @@ public class BlockRescueChest extends BlockContainer {
     @Override
     public boolean rotateBlock(World worldObj, int x, int y, int z, ForgeDirection axis)
     {
-        if (worldObj.isRemote)
-        {
+        if (worldObj.isRemote) {
             return false;
         }
-        if (axis == UP || axis == DOWN)
-        {
+        if (axis == UP || axis == DOWN) {
             TileEntity tileEntity = worldObj.getBlockTileEntity(x, y, z);
             if (tileEntity instanceof TileEntityRescueChest) {
                 TileEntityRescueChest rcte = (TileEntityRescueChest) tileEntity;
