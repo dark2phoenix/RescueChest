@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,7 +28,7 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dark2phoenix.mods.rescuechest.RescueChest;
-import dark2phoenix.mods.rescuechest.core.Constants;
+import dark2phoenix.mods.rescuechest.lib.Constants;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class BlockRescueChest extends BlockContainer {
@@ -318,6 +319,11 @@ public class BlockRescueChest extends BlockContainer {
             return true;
         }
         return false;
+    }
+    
+    @Override
+    public int getComparatorInputOverride(World par1World, int par2, int par3, int par4, int par5) {
+        return Container.calcRedstoneFromInventory((TileEntityRescueChest) par1World.getBlockTileEntity(par2, par3, par4));
     }
     
 }

@@ -1,4 +1,4 @@
-package dark2phoenix.mods.rescuechest.client.proxy;
+package dark2phoenix.mods.rescuechest.core.proxy;
 
 import net.minecraft.client.renderer.ChestItemRenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,7 +9,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import dark2phoenix.mods.rescuechest.client.RescueChestRenderHelper;
 import dark2phoenix.mods.rescuechest.client.renderer.TileEntityRescueChestRenderer;
-import dark2phoenix.mods.rescuechest.core.proxy.CommonProxy;
 import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
