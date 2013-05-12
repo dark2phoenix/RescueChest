@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.Property;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -30,6 +31,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import dark2phoenix.mods.rescuechest.block.BlockRescueChest;
 import dark2phoenix.mods.rescuechest.client.renderer.TileEntityRescueChestRenderer;
+import dark2phoenix.mods.rescuechest.core.Localization;
 import dark2phoenix.mods.rescuechest.core.Version;
 import dark2phoenix.mods.rescuechest.core.handlers.PlayerLivingDeathEventHandler;
 import dark2phoenix.mods.rescuechest.core.proxy.CommonProxy;
@@ -62,7 +64,7 @@ public class RescueChest {
 	public static RescueChest instance;
 
 	
-	
+	public static Configuration rescueChestConfig;
 	
 	/**
 	 * Forge Proxy Information
@@ -76,18 +78,24 @@ public class RescueChest {
 		logger.entering(sourceClass, sourceMethod, event);
 		Version.init(event.getVersionProperties());
 		event.getModMetadata().version = Version.fullVersionString();
-		Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
+		Configuration rescueChestConfig = new Configuration(event.getSuggestedConfigurationFile());
 		try {
-			cfg.load();
-			rescueChestBlockId = cfg.getBlock("RescueChest", 501).getInt(501);
-			hotbarItemId = cfg.getItem("HotbarItem", 29775).getInt(29775);
+		    rescueChestConfig.load();
+			rescueChestBlockId = rescueChestConfig.getBlock("RescueChest", 501).getInt(501);
+			hotbarItemId = rescueChestConfig.getItem("HotbarItem", 29775).getInt(29775);
 			logger.logp(Level.FINE, sourceClass, sourceMethod, "Rescue Chest Block ID is " + rescueChestBlockId);
+
+	       Property defaultLanguageProp = rescueChestConfig.get("general", "DefaultLanguage", "en_US");
+	        
+	        Localization.addLocalization( "/lang/rescuechest/", defaultLanguageProp.getString() );
+			
+			
 		}
 		catch (Exception e) {
 			FMLLog.log(Level.SEVERE, e, "Rescue Chest could not load configuration");
 		}
 		finally {
-			cfg.save();
+		    rescueChestConfig.save();
 		}
 		logger.exiting(sourceClass, sourceMethod);
 	}
@@ -99,9 +107,6 @@ public class RescueChest {
 		// Setup our chest block
 		
 		rescueChestBlock = new BlockRescueChest(rescueChestBlockId, BlockRescueChest.material );
-//		rescueChestBlock.setBlockName("rescueChest");
-		
-
 
 		GameRegistry.registerBlock(rescueChestBlock, "rescueChest");
 		GameRegistry.registerTileEntity(TileEntityRescueChest.class, "rescueChest");
@@ -119,7 +124,9 @@ public class RescueChest {
 		// Register custom events
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(new PlayerLivingDeathEventHandler());
-	}
+
+    
+    }
 
 	public RescueChest() {
 		super();
@@ -127,7 +134,7 @@ public class RescueChest {
 		logger.setParent(FMLLog.getLogger());
 		logger.setLevel(Level.FINEST);
 		logger.setUseParentHandlers(true);
-
+	
 	}
 
     @SuppressWarnings("unchecked")

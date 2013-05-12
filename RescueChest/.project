@@ -14,4 +14,14 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>BUILDCRAFT_RESOURCES_LOCATION</name>
+			<value>file:/D:/development/source/Buildcraft/BuildCraft/buildcraft_resources</value>
+		</variable>
+		<variable>
+			<name>BUILDCRAFT_SOURCE_LOCATION</name>
+			<value>file:/D:/development/source/Buildcraft/BuildCraft/common</value>
+		</variable>
+	</variableList>
 </projectDescription>

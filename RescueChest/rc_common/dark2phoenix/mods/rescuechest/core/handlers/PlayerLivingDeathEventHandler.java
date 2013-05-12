@@ -14,7 +14,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import dark2phoenix.mods.rescuechest.core.Constants;
+import dark2phoenix.mods.rescuechest.lib.Constants;
+import dark2phoenix.mods.rescuechest.lib.Constants.InventoryType;
 import dark2phoenix.mods.rescuechest.core.types.ChestLocation;
 import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
@@ -99,16 +100,18 @@ public class PlayerLivingDeathEventHandler {
 					dyingPlayer.addChatMessage("Severe error trying to save items to Rescue chest, see log!!!");
 					return;
 				}
+				
+				ContainerRescueChest rescueChestContainer = new ContainerRescueChest(playerInventory, activeChest, false );
 
 				// Get the items in the player's armor slots
                 ItemStack[] playerArmorInventory = playerInventory.armorInventory;
-                addItemsToInventory(dyingPlayer, activeChest, playerArmorInventory, "Armor");
+                rescueChestContainer.addItemsToInventory(dyingPlayer, activeChest, playerArmorInventory, InventoryType.ARMOR);
                 activeChest.updateEntity();
                 dyingPlayer.worldObj.markBlockForUpdate(x, y, z);
 				
 				// Get the items from the player's main Inventory
 				ItemStack[] playerMainInventory = playerInventory.mainInventory;
-				addItemsToInventory(dyingPlayer, activeChest, playerMainInventory, "Main");
+				rescueChestContainer.addItemsToInventory(dyingPlayer, activeChest, playerMainInventory, InventoryType.MAIN);
 				activeChest.updateEntity();
 				dyingPlayer.worldObj.markBlockForUpdate(x, y, z);
 
@@ -121,60 +124,4 @@ public class PlayerLivingDeathEventHandler {
 		}
 	}
 
-	/**
-	 * Private method to go through an inventory and transfer items to the Save
-	 * Point Chest
-	 * 
-	 * @param dyingPlayer
-	 *          Player who is dying
-	 * @param activeChest
-	 *          Rescue Chest the player is currently using
-	 * @param playerInventory
-	 *          Inventory object to process
-	 * @param playerInventoryName
-	 *          A description of the inventory (used for logging only)
-	 */
-	private void addItemsToInventory(EntityPlayer dyingPlayer, TileEntityRescueChest activeChest, ItemStack[] playerInventory, String playerInventoryName) {
-		String sourceMethod = "addItemsToInventory";
-				
-		logger.entering(sourceClass, sourceMethod, new Object[] { dyingPlayer, activeChest, playerInventory, playerInventoryName });
-		logger.logp(Level.INFO, sourceClass, sourceClass, String.format("Processing player %s inventory", playerInventoryName));
-		logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Player Inventory contains %d items, Rescue Chest has only %d", playerInventory.length, activeChest.getSizeInventory()));
-
-        // Must be a better way to do this, but I don't know how to get the Slot information without
-        // creating a new container and matching it up
-        ContainerRescueChest chestContainer = new ContainerRescueChest( dyingPlayer.inventory, activeChest, true);
-        
-		for (int playerInventorySlot = 0; playerInventorySlot < playerInventory.length; playerInventorySlot++) {
-			logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Processing Player Inventory %s Slot %d", playerInventoryName, playerInventorySlot));
-
-			if (playerInventory[playerInventorySlot] == null) {
-				logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Player Inventory %s, Slot %d is null, continuing on", playerInventoryName, playerInventorySlot));
-				continue;
-			}
-			logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Player Inventory %s, Slot %d contains %d of %s", playerInventoryName, playerInventorySlot, playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
-            logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Processing RescueChest Inventory for %d of %s in player inventory", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
-            boolean placedItem = false;
-			for (int chestInventorySlot = 0; chestInventorySlot < activeChest.getSizeInventory(); chestInventorySlot++) {
-				if (activeChest.getStackInSlot(chestInventorySlot) == null) {
-				    Slot currentSlot = chestContainer.getSlot(chestInventorySlot);
-                    if ( currentSlot.isItemValid(playerInventory[playerInventorySlot]) ) {
-                        logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Moving %d of %s from Player Inventory to chest slot %d", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName(), chestInventorySlot));
-                        activeChest.setInventorySlotContents(chestInventorySlot, playerInventory[playerInventorySlot].copy());
-                        placedItem = true;
-                        break;
-                    }
-                    else {
-                        logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Cannot Move %s from Player Inventory to chest slot %d because it is not valid for that slot", playerInventory[playerInventorySlot].getDisplayName(), chestInventorySlot));
-                    }
-				}
-				else {
-				    logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Skipping Resue Chest slot %d because it contains %d of %s", chestInventorySlot, activeChest.getStackInSlot(chestInventorySlot).stackSize, activeChest.getStackInSlot(chestInventorySlot).getDisplayName()));
-				}
-			}
-			if (! placedItem) {
-			    logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("Dropping %d of %s of playerInventory because chest inventory is full", playerInventory[playerInventorySlot].stackSize, playerInventory[playerInventorySlot].getDisplayName()));
-			}
-		}
-	}
 }

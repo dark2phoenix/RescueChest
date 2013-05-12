@@ -2,8 +2,9 @@ package dark2phoenix.mods.rescuechest.gui;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
-
 import org.lwjgl.opengl.GL11;
+
+import dark2phoenix.mods.rescuechest.core.StringUtils;
 
 import dark2phoenix.mods.rescuechest.RescueChest;
 import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
@@ -19,22 +20,16 @@ public class GuiRescueChest extends GuiContainer {
 		this.allowUserInput = false;
 	}
 
-//	@Override
-//	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-//		// // the parameters for drawString are: string, x, y, color
-//		fontRenderer.drawString("SavePoint Chest", 8, 6, 4210752);
-//		// //draws "Inventory" or your regional equivalent
-//		fontRenderer.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 4210752);
-//	}
+	@Override
+	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
+	    // draws the specified string. Args: string, x, y, color, dropShadow
+		fontRenderer.drawString(StringUtils.localize("gui.rescuechest.name"), 85, 7, 0xFFAA00, false);
+	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
 		// draw your Gui here, only thing you need to change is the path
-//		int texture = mc.renderEngine.getTexture("/dark2phoenix/mods/rescuechest/sprites/RescueChestContainer.png");
-		String texture = String.format("/mods/%s/textures/gui/%s", RescueChest.modid.toLowerCase(), "RescueChestContainer2.png");
-		
-		
-		
+		String texture = String.format("/mods/%s/textures/gui/%s", RescueChest.modid.toLowerCase(), "RescueChestContainer.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(texture);
 		int x = (width - xSize) / 2;
