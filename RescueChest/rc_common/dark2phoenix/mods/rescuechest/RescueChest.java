@@ -29,6 +29,8 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import cpw.mods.fml.relauncher.FMLRelaunchLog;
+
 import dark2phoenix.mods.rescuechest.block.BlockRescueChest;
 import dark2phoenix.mods.rescuechest.client.renderer.TileEntityRescueChestRenderer;
 import dark2phoenix.mods.rescuechest.core.Localization;
@@ -44,8 +46,8 @@ import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class RescueChest {
 
-	public static final Logger logger = Logger.getLogger("RescueChest");
-
+	public static Logger logger = Logger.getLogger("RescueChest");
+    
 	public static final String modid = Reference.MOD_ID;
 	
 	String sourceClass = this.getClass().getName();
@@ -74,7 +76,11 @@ public class RescueChest {
 
 	@PreInit
 	public void preInit(FMLPreInitializationEvent event) {
-		String sourceMethod = "preInit";
+        String sourceMethod = "preInit";
+        logger.entering(sourceClass, sourceMethod);
+        logger.logp(Level.INFO, sourceClass, sourceMethod, String.format("LogLevel is currently %s", logger.getLevel().getName()));
+        
+	    
 		logger.entering(sourceClass, sourceMethod, event);
 		Version.init(event.getVersionProperties());
 		event.getModMetadata().version = Version.fullVersionString();
@@ -88,7 +94,6 @@ public class RescueChest {
 	       Property defaultLanguageProp = rescueChestConfig.get("general", "DefaultLanguage", "en_US");
 	        
 	        Localization.addLocalization( "/lang/rescuechest/", defaultLanguageProp.getString() );
-			
 			
 		}
 		catch (Exception e) {
@@ -104,7 +109,7 @@ public class RescueChest {
     @Init
 	public void load(FMLInitializationEvent event) {
 
-		// Setup our chest block
+        // Setup our chest block
 		
 		rescueChestBlock = new BlockRescueChest(rescueChestBlockId, BlockRescueChest.material );
 
@@ -129,13 +134,12 @@ public class RescueChest {
     }
 
 	public RescueChest() {
-		super();
-
-		logger.setParent(FMLLog.getLogger());
-		logger.setLevel(Level.FINEST);
-		logger.setUseParentHandlers(true);
-	
-	}
+        super();
+       
+        logger.setParent(FMLLog.getLogger());
+        logger.setLevel(Level.FINEST);
+        logger.setUseParentHandlers(true);
+ 	}
 
     @SuppressWarnings("unchecked")
 	@PostInit

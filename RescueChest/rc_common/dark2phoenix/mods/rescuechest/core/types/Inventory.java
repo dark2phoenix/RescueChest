@@ -7,9 +7,9 @@ public class Inventory {
     private int startingOffset;
 
     
-    public Inventory( int inStartingOffset, String inName ) {
-        this.startingOffset = inStartingOffset;
+    public Inventory( String inName, int inStartingOffset ) {
         this.name = inName;
+        this.startingOffset = inStartingOffset;
     }
     
     /**
@@ -30,7 +30,7 @@ public class Inventory {
     /**
      * @return the id
      */
-    public int getId() {
+    public int getStartingOffset() {
         return startingOffset;
     }
 
@@ -38,7 +38,7 @@ public class Inventory {
      * @param startingOffset
      *            the id to set
      */
-    public void setId(int newStartingOffset) {
+    public void setStartingOffset(int newStartingOffset) {
         this.startingOffset = newStartingOffset;
     }
 

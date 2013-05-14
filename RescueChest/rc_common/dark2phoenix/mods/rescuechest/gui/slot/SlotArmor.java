@@ -31,6 +31,7 @@ public class SlotArmor extends Slot {
     public SlotArmor(IInventory par2IInventory, int par3, int par4, int par5, ArmorSlots allowedArmorType) {
         super(par2IInventory, par3, par4, par5);
         this.armorType = allowedArmorType.getValue();
+        this.backgroundIcon = ItemArmor.func_94602_b(this.armorType);
     }
 
     /**
@@ -60,30 +61,24 @@ public class SlotArmor extends Slot {
             logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack is not null");
             returnValue = false;
             if (itemStack.getItem() instanceof ItemArmor) {
-                logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack is an instance of ItemArmor", new Object[] { itemStack });
+                logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack is an instance of ItemArmor");
                 ItemArmor itemArmor = (ItemArmor) itemStack.getItem();
-                logger.logp(Level.FINE, sourceClass, sourceMethod, "itemArmor type is %d, armor slot is type %d", new Object[] { itemArmor.armorType, this.armorType });
+                logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("itemArmor type is %d, armor slot is type %d", itemArmor.armorType, this.armorType ));
                 returnValue = itemArmor.isValidArmor(itemStack, armorType);
-                logger.logp(Level.FINE, sourceClass, sourceMethod, "item returns %b for armor slot type %d", new Object[] { returnValue, this.armorType });
+                logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("item returns %b for armor slot type %d", returnValue, this.armorType ));
             }
-            logger.logp(Level.FINE, sourceClass, sourceMethod, "Check special cases for HELMET", new Object[] { itemStack.getItem() });
+            logger.logp(Level.FINE, sourceClass, sourceMethod, "Check special cases for armorType.HELMET");
             if (this.armorType == ArmorSlots.HELMET.getValue()) {
                 if (itemStack.getItem().itemID == Block.pumpkin.blockID) {
-                    logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack contains a pumpkin which can be a helmet", new Object[] { itemStack.getItem() });
+                    logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack contains a pumpkin which can be a helmet");
                     returnValue = true;
                 } else if (itemStack.getItem() instanceof ItemSkull ) {
-                    logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack contains a skull which can be a helmet", new Object[] { itemStack.getItem() });
+                    logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack contains a skull which can be a helmet");
                     returnValue = true;
                 }
             }
         }
 
-        // boolean returnValue = (itemStack == null ) ? false
-        // : (itemStack.getItem() instanceof ItemArmor ? ((ItemArmor)
-        // itemStack.getItem()).armorType == this.armorType
-        // : (itemStack.getItem().itemID != Block.pumpkin.blockID &&
-        // itemStack.getItem().itemID != Item.skull.itemID ? false
-        // : this.armorType == 0));
         logger.logp(Level.FINE, sourceClass, sourceMethod, "Final decision was " + returnValue);
         logger.exiting(sourceClass, sourceMethod);
         return returnValue;

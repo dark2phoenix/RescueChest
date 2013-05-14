@@ -8,7 +8,7 @@ public class Constants {
      * Name of the primary NBTTagCompound that holds Rescue Chest Data
      */
     public static final String NBT_RESCUE_CHEST_TAG_NAME = "RescueChest";
-
+    
     /**
      * Armor slot values used to determine which pieces go in which slot
      */
@@ -30,15 +30,15 @@ public class Constants {
      *
      */
     public enum InventoryType {
-        ARMOR(0, "Armor"), MAIN(4, "Main");
+        ARMOR("Armor", 0), MAIN("Main", 4 ), HOTBAR("Hotbar", 31);
         private Inventory inventory;
         
-        private InventoryType(int newStartingOffset, String newName ) {
-            this.inventory = new Inventory(newStartingOffset, newName);
+        private InventoryType(String newName, int newStartingOffset ) {
+            this.inventory = new Inventory(newName, newStartingOffset);
         }   
         
         public int getStartingOffset() {
-            return this.inventory.getId();
+            return this.inventory.getStartingOffset();
         }
         
         public String getName() {

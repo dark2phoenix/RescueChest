@@ -48,9 +48,7 @@ public class SlotHotBar extends Slot {
      * Returns the icon index on items.png that is used as background image of the slot.
      */
     public Icon getBackgroundIconIndex() {
-        String sourceMethod = "getBackgroundIconIndex()";
         Icon icon = ItemHotBar.getHotbarIcon( (isActive) ? 0 : 1 ); 
-        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("Icon name is %s",  icon.getIconName()));
         return icon;
     }
     

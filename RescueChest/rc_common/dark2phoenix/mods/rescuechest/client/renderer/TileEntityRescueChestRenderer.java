@@ -62,7 +62,6 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
      */
     public void renderTileEntityRescueChestAt(TileEntityRescueChest tileEntity, double x, double y, double z, float partialTick) {
 
-        String sourceMethod = "renderTileEntityRescueChestAt";
         if (tileEntity == null) { 
             return;
         }
@@ -99,7 +98,6 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
             facing = -90;
         }
         
-        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("Chest facingDirection set to %d", facing ));
         GL11.glRotatef((float) facing, 0.0F, 1.0F, 0.0F);
         GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
         float lidAngle = tileEntity.getPrevLidAngle() + (tileEntity.getLidAngle() - tileEntity.getPrevLidAngle()) * partialTick;

@@ -48,7 +48,7 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     ItemStack[]         chestContents;
 
     public TileEntityRescueChest() {
-        inv = new ItemStack[45];
+        inv = new ItemStack[40];
     }
 
     /**

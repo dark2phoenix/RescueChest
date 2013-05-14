@@ -76,7 +76,6 @@ public class BlockRescueChest extends BlockContainer {
 		this.setStepSound(Block.soundWoodFootstep);
 		this.setBlockBounds(0.0625F, 0F, 0.0625F, 0.9375F, 0.875F, 0.9375F);
         setCreativeTab(CreativeTabs.tabDecorations);
-
 	}
 
 	@Override
@@ -257,8 +256,10 @@ public class BlockRescueChest extends BlockContainer {
 	}
 
 	
-    public void dropContent(int newSize, IInventory chest, World world, int xCoord, int yCoord, int zCoord)
-    {
+    public void dropContent(int newSize, IInventory chest, World world, int xCoord, int yCoord, int zCoord)    {
+        
+        random = new Random(world.getSeed());
+        
         for (int l = newSize; l < chest.getSizeInventory(); l++)
         {
             ItemStack itemstack = chest.getStackInSlot(l);
