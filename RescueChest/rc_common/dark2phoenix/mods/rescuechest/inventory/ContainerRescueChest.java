@@ -24,15 +24,6 @@ public class ContainerRescueChest extends Container {
 
     private String        sourceClass        = this.getClass().getName();
 
-    /**
-     * Number of Rows for the container
-     */
-    private final int     rows               = 4;
-
-    /**
-     * Number of slots per row
-     */
-    private final int     slotsPerRow        = 9;
 
     /**
      * Container GUI width
@@ -45,6 +36,13 @@ public class ContainerRescueChest extends Container {
     /**
      * Total number of slots the container holds
      */
+    
+    private final int slotUpperLeftCornerX = 12;
+    
+    private final int slotUpperLeftCornerY = 8;
+    
+    private final int slotSize = 18;
+    
     private final int     totalNumberofSlots = 40;
 
     /**
@@ -63,26 +61,29 @@ public class ContainerRescueChest extends Container {
         tileEntityRescueChest = te;
 
         int slotIndex = 0;
+
         // Armor Inventory
-        addSlotToContainer(new SlotArmor(te, slotIndex, 12 + slotIndex++ * 18, 8, ArmorSlots.HELMET));
-        addSlotToContainer(new SlotArmor(te, slotIndex, 12 + slotIndex++ * 18, 8, ArmorSlots.CHEST_PLATE));
-        addSlotToContainer(new SlotArmor(te, slotIndex, 12 + slotIndex++ * 18, 8, ArmorSlots.GREAVES));
-        addSlotToContainer(new SlotArmor(te, slotIndex, 12 + slotIndex++ * 18, 8, ArmorSlots.BOOTS));
+        addSlotToContainer(new SlotArmor(te, slotIndex, slotUpperLeftCornerX + slotIndex++ * slotSize, slotUpperLeftCornerY, ArmorSlots.HELMET));
+        addSlotToContainer(new SlotArmor(te, slotIndex, slotUpperLeftCornerX + slotIndex++ * slotSize, slotUpperLeftCornerY, ArmorSlots.CHEST_PLATE));
+        addSlotToContainer(new SlotArmor(te, slotIndex, slotUpperLeftCornerX + slotIndex++ * slotSize, slotUpperLeftCornerY, ArmorSlots.GREAVES));
+        addSlotToContainer(new SlotArmor(te, slotIndex, slotUpperLeftCornerX + slotIndex++ * slotSize, slotUpperLeftCornerY, ArmorSlots.BOOTS));
 
-        // Chest Inventory
-        for (int chestRow = 1; chestRow < 4; chestRow++) {
-            for (int chestCol = 0; chestCol < slotsPerRow; chestCol++) {
-                addSlotToContainer(new Slot(te, slotIndex++, 12 + chestCol * 18, 8 + chestRow * 18));
+        // Main Inventory
+        int mainInventoryslotsPerRow  = 9;
+        int mainInventoryStartingRow  = 1;
+        int mainInventoryRows = 3;
+
+        for (int mainInventoryRow = mainInventoryStartingRow; mainInventoryRow < (mainInventoryStartingRow + mainInventoryRows);  mainInventoryRow++) {
+            for (int mainInventoryColumn = 0; mainInventoryColumn < mainInventoryslotsPerRow; mainInventoryColumn++) {
+                addSlotToContainer(new Slot(te, slotIndex++, slotUpperLeftCornerX + mainInventoryColumn * slotSize, slotUpperLeftCornerY + mainInventoryRow * slotSize));
             }
-
         }
 
         // Hot Bar Inventory
-        int hotBotRow = 4;
-        for (int chestCol = 0; chestCol < slotsPerRow; chestCol++) {
-            boolean makeActive = true;
-
-            addSlotToContainer(new SlotHotBar(te, slotIndex++, 12 + chestCol * 18, 8 + hotBotRow * 18, makeActive));
+        int hotBarChestStartingRow = 4;
+        int hotBarSlots = 9;
+        for (int chestCol = 0; chestCol < hotBarSlots; chestCol++) {
+            addSlotToContainer(new SlotHotBar(te, slotIndex++, slotUpperLeftCornerX + chestCol * slotSize, slotUpperLeftCornerY + hotBarChestStartingRow * slotSize, te.isHotBarActive()));
         }
 
         // Bottom of the Display
@@ -130,12 +131,19 @@ public class ContainerRescueChest extends Container {
                     }
                 }
             }
+            
+            // Don't check the hotbar slots if they are disabled (pick 1, they all are the same)
+            int lastSlotToCheck = totalNumberofSlots;
+            
+            if ( ! this.tileEntityRescueChest.isHotBarActive() ) {
+                lastSlotToCheck = totalNumberofSlots - 9;
+            }
 
-            if (slotNumber < totalNumberofSlots) {
-                if (!mergeItemStack(itemStack1, totalNumberofSlots, inventorySlots.size(), true)) {
+            if (slotNumber < lastSlotToCheck) {
+                if (!mergeItemStack(itemStack1, lastSlotToCheck, inventorySlots.size(), true)) {
                     return null;
                 }
-            } else if (!mergeItemStack(itemStack1, firstSlot, totalNumberofSlots, false)) {
+            } else if (!mergeItemStack(itemStack1, firstSlot, lastSlotToCheck, false)) {
                 return null;
             }
             if (itemStack1.stackSize == 0) {

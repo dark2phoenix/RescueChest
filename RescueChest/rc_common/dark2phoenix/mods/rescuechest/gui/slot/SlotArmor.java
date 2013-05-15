@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
@@ -28,8 +27,10 @@ public class SlotArmor extends Slot {
 
     private String sourceClass = this.getClass().getName();
 
-    public SlotArmor(IInventory par2IInventory, int par3, int par4, int par5, ArmorSlots allowedArmorType) {
-        super(par2IInventory, par3, par4, par5);
+    //IInventory inventory, int slotIndex, int xDisplayPosition, int yDisplayPosition, boolean makeActive)
+    
+    public SlotArmor(IInventory inventory, int slotIndex, int xDisplayPosition, int yDisplayPosition, ArmorSlots allowedArmorType) {
+        super(inventory, slotIndex, xDisplayPosition, yDisplayPosition);
         this.armorType = allowedArmorType.getValue();
         this.backgroundIcon = ItemArmor.func_94602_b(this.armorType);
     }
@@ -53,17 +54,14 @@ public class SlotArmor extends Slot {
         logger.entering(sourceClass, sourceMethod, itemStack);
 
         // Making this decision in less optimized so it is easier to debug
-        
-        
         boolean returnValue = false;
 
         if (itemStack != null) {
             logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack is not null");
-            returnValue = false;
             if (itemStack.getItem() instanceof ItemArmor) {
                 logger.logp(Level.FINE, sourceClass, sourceMethod, "itemStack is an instance of ItemArmor");
                 ItemArmor itemArmor = (ItemArmor) itemStack.getItem();
-                logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("itemArmor type is %d, armor slot is type %d", itemArmor.armorType, this.armorType ));
+                logger.logp(Level.FINER, sourceClass, sourceMethod, String.format("itemArmor type is %d, armor slot is type %d", itemArmor.armorType, this.armorType ));
                 returnValue = itemArmor.isValidArmor(itemStack, armorType);
                 logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("item returns %b for armor slot type %d", returnValue, this.armorType ));
             }

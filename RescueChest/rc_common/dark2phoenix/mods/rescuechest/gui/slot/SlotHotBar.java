@@ -1,20 +1,19 @@
 package dark2phoenix.mods.rescuechest.gui.slot;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dark2phoenix.mods.rescuechest.RescueChest;
-import dark2phoenix.mods.rescuechest.block.BlockRescueChest;
 import dark2phoenix.mods.rescuechest.item.ItemHotBar;
 
 public class SlotHotBar extends Slot {
 
-    private Logger  logger  = RescueChest.logger;
+    private Logger  logger      = RescueChest.logger;
 
     private String  sourceClass = this.getClass().getName();
 
@@ -34,6 +33,15 @@ public class SlotHotBar extends Slot {
     }
 
     /**
+     * Check if the stack is a valid item for this slot. Always true beside for
+     * the armor slots.
+     */
+    @Override
+    public boolean isItemValid(ItemStack itemStack) {
+        return this.isActive;
+    }
+
+    /**
      * Returns the maximum stack size for a given slot (usually the same as
      * getInventoryStackLimit(), but 1 in the case of armor slots)
      */
@@ -48,9 +56,8 @@ public class SlotHotBar extends Slot {
      * Returns the icon index on items.png that is used as background image of the slot.
      */
     public Icon getBackgroundIconIndex() {
-        Icon icon = ItemHotBar.getHotbarIcon( (isActive) ? 0 : 1 ); 
+        Icon icon = ItemHotBar.getHotbarIcon((isActive) ? 0 : 1);
         return icon;
     }
-    
-    
+
 }

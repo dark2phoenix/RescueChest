@@ -47,6 +47,10 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     /** Array of the current chest contents */
     ItemStack[]         chestContents;
 
+    
+    private boolean isHotBarActive = false;
+    
+    
     public TileEntityRescueChest() {
         inv = new ItemStack[40];
     }
@@ -346,6 +350,14 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         tagCompound.setTag("Inventory", itemList);
         tagCompound.setByte("facing", facing);
 
+    }
+
+    public boolean isHotBarActive() {
+        return isHotBarActive;
+    }
+
+    public void setHotBarActive(boolean isHotBarActive) {
+        this.isHotBarActive = isHotBarActive;
     }
 
 }
