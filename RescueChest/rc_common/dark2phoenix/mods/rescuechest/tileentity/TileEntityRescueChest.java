@@ -23,9 +23,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     private String      sourceClass = this.getClass().getName();
 
-    /** Array of items the chest can hold **/
-    private ItemStack[] inv;
-
     /** Direction the chest is currently facing **/
     private byte        facing;
 
@@ -47,12 +44,16 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     /** Array of the current chest contents */
     ItemStack[]         chestContents;
 
+    /**
+     * Total number of slots
+     */
+    private int inventorySize = 40;
     
     private boolean isHotBarActive = false;
     
     
     public TileEntityRescueChest() {
-        inv = new ItemStack[40];
+        chestContents = new ItemStack[getSizeInventory()];
     }
 
     /**
@@ -134,12 +135,12 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     @Override
     public int getSizeInventory() {
-        return inv.length;
+        return inventorySize;
     }
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        return inv[slot];
+        return chestContents[slot];
     }
 
     @Override
@@ -186,14 +187,15 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
+        String sourceMethod = "readFromNBT";
         super.readFromNBT(tagCompound);
 
         NBTTagList tagList = tagCompound.getTagList("Inventory");
         for (int i = 0; i < tagList.tagCount(); i++) {
             NBTTagCompound tag = (NBTTagCompound) tagList.tagAt(i);
             byte slot = tag.getByte("Slot");
-            if (slot >= 0 && slot < inv.length) {
-                inv[slot] = ItemStack.loadItemStackFromNBT(tag);
+            if (slot >= 0 && slot < chestContents.length) {
+                chestContents[slot] = ItemStack.loadItemStackFromNBT(tag);
             }
         }
         facing = tagCompound.getByte("facing");
@@ -219,8 +221,13 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     }
 
     public void rotateAround(ForgeDirection axis) {
-        setFacing((byte) ForgeDirection.getOrientation(facing).getRotation(axis).ordinal());
+        String sourceMethod="RotateAround";
+        logger.entering(sourceClass, sourceMethod, axis);
+        byte newDirection = (byte) ForgeDirection.getOrientation(facing).getRotation(axis).ordinal();
+        setFacing(newDirection);
+        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("Setting direction to %d", newDirection));
         worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 2, getFacing());
+        logger.exiting(sourceClass, sourceMethod, newDirection);
     }
 
     /**
@@ -236,7 +243,7 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
-        inv[slot] = stack;
+        chestContents[slot] = stack;
         if (stack != null && stack.stackSize > getInventoryStackLimit()) {
             stack.stackSize = getInventoryStackLimit();
         }
@@ -334,12 +341,12 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
-
+        String sourceMethod = "WriteToNBT";
         super.writeToNBT(tagCompound);
 
         NBTTagList itemList = new NBTTagList();
-        for (int i = 0; i < inv.length; i++) {
-            ItemStack stack = inv[i];
+        for (int i = 0; i < chestContents.length; i++) {
+            ItemStack stack = chestContents[i];
             if (stack != null) {
                 NBTTagCompound tag = new NBTTagCompound();
                 tag.setByte("Slot", (byte) i);
@@ -349,7 +356,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         }
         tagCompound.setTag("Inventory", itemList);
         tagCompound.setByte("facing", facing);
-
     }
 
     public boolean isHotBarActive() {
@@ -359,5 +365,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     public void setHotBarActive(boolean isHotBarActive) {
         this.isHotBarActive = isHotBarActive;
     }
-
+    
+    
 }

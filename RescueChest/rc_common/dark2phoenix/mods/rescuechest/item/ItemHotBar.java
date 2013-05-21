@@ -11,6 +11,7 @@ public class ItemHotBar extends Item {
 
     public ItemHotBar(int id) {
         super(id);
+        setUnlocalizedName("hotbarItem");
     }
 
  

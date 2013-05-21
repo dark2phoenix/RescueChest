@@ -36,7 +36,7 @@ public class BlockRescueChest extends BlockContainer {
 	/**
 	 * Material for this block
 	 */
-    public static Material material = Material.wood;
+    static Material material = Material.wood;
     
     /**
      * List of the sides for this block
@@ -69,13 +69,14 @@ public class BlockRescueChest extends BlockContainer {
     @SideOnly(Side.CLIENT)
     private Icon[] icons;
 
-	public BlockRescueChest(int id, Material material) {
+	public BlockRescueChest(int id) {
 
 		super(id, material);
-		this.setHardness(0.5F);
-		this.setStepSound(Block.soundWoodFootstep);
-		this.setBlockBounds(0.0625F, 0F, 0.0625F, 0.9375F, 0.875F, 0.9375F);
+		setHardness(0.5F);
+		setStepSound(Block.soundWoodFootstep);
+		setBlockBounds(0.0625F, 0F, 0.0625F, 0.9375F, 0.875F, 0.9375F);
         setCreativeTab(CreativeTabs.tabDecorations);
+        setUnlocalizedName("rescueChest");
 	}
 
 	@Override
@@ -112,23 +113,10 @@ public class BlockRescueChest extends BlockContainer {
          }
 
 	 }
-	 
-	@SideOnly(Side.CLIENT)
-	public int getBlockTextureFromSideAndMetadata(int i, int j) {
-		switch (i) {
-		case 0: // Top
-		case 1: // Bottom
-			return 0;
-		case 3:
-			return 2;
-		default:
-			return 1;
-		}
-	}
 
 	@Override
 	public int getRenderType() {
-		return 22;
+	    return RescueChest.getRescueChestRenderID();
 	}
 
 	@Override

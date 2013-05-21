@@ -3,11 +3,13 @@ package dark2phoenix.mods.rescuechest.client.renderer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.minecraft.client.model.ModelChest;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -26,34 +28,12 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
     private RenderItem       itemRenderer;
 
     /** The normal small chest model. */
-    private ModelRescueChest chestModel  = new ModelRescueChest();
+    private ModelChest chestModel  = new ModelChest();
     private Logger           logger      = RescueChest.logger;
     private String           sourceClass = this.getClass().getName();
 
     public TileEntityRescueChestRenderer() {
         super();
-        itemRenderer = new RenderItem() {
-            @Override
-            public byte getMiniBlockCount(ItemStack stack) {
-                return SignedBytes.saturatedCast(Math.min(stack.stackSize / 32, 15) + 1);
-            }
-
-            @Override
-            public byte getMiniItemCount(ItemStack stack) {
-                return SignedBytes.saturatedCast(Math.min(stack.stackSize / 32, 7) + 1);
-            }
-
-            @Override
-            public boolean shouldBob() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldSpreadItems() {
-                return false;
-            }
-        };
-        itemRenderer.setRenderManager(RenderManager.instance);
     }
 
 
@@ -112,6 +92,6 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTick) {
-        this.renderTileEntityRescueChestAt((TileEntityRescueChest) tileEntity, x, y, z, partialTick);
+        renderTileEntityRescueChestAt((TileEntityRescueChest) tileEntity, x, y, z, partialTick);
     }
 }
