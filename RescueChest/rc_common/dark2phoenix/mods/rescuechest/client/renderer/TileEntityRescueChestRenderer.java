@@ -41,11 +41,12 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
      * Renders the TileEntity for the chest at a position.
      */
     public void renderTileEntityRescueChestAt(TileEntityRescueChest tileEntity, double x, double y, double z, float partialTick) {
-
+        String sourceMethod="renderTileEntityRescueChestAt";
         if (tileEntity == null) { 
             return;
         }
 
+        // face west
         int blockFacingDirection = 3;
 
         if (tileEntity.getWorldObj() != null ) {
@@ -60,25 +61,25 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
         GL11.glTranslatef((float) x, (float) y + 1.0F, (float) z + 1.0F);
         GL11.glScalef(1.0F, -1.0F, -1.0F);
         GL11.glTranslatef(0.5F, 0.5F, 0.5F);
-        short facing = 0;
+        short facingDirection = 0;
 
         if (blockFacingDirection == 2) {
-            facing = 180;
+            facingDirection = 180;
         }
 
         if (blockFacingDirection == 3) {
-            facing = 0;
+            facingDirection = 0;
         }
 
         if (blockFacingDirection == 4) {
-            facing = 90;
+            facingDirection = 90;
         }
 
         if (blockFacingDirection == 5) {
-            facing = -90;
+            facingDirection = -90;
         }
         
-        GL11.glRotatef((float) facing, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef((float) facingDirection, 0.0F, 1.0F, 0.0F);
         GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
         float lidAngle = tileEntity.getPrevLidAngle() + (tileEntity.getLidAngle() - tileEntity.getPrevLidAngle()) * partialTick;
 
@@ -92,6 +93,12 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTick) {
-        renderTileEntityRescueChestAt((TileEntityRescueChest) tileEntity, x, y, z, partialTick);
+        if ( tileEntity instanceof TileEntityRescueChest) {
+            renderTileEntityRescueChestAt((TileEntityRescueChest) tileEntity, x, y, z, partialTick);
+        }
+        else {
+            throw new IllegalArgumentException("This is not a rescuechest tile entity!!!!");
+        }
+            
     }
 }

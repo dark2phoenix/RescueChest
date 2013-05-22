@@ -13,6 +13,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.ForgeDirection;
@@ -24,7 +27,7 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     private String      sourceClass = this.getClass().getName();
 
     /** Direction the chest is currently facing **/
-    private byte        facing;
+    private int        facing;
 
     /** The current angle of the lid (between 0 and 1) */
     float        lidAngle    = 0.0F;
@@ -98,7 +101,7 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         return chestContents;
     }
 
-    public byte getFacing() {
+    public int getFacing() {
         return this.facing;
     }
 
@@ -198,9 +201,8 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
                 chestContents[slot] = ItemStack.loadItemStackFromNBT(tag);
             }
         }
-        facing = tagCompound.getByte("facing");
+        setFacing(tagCompound.getInteger("facing"));
         NBTTagList rescueChestTagList = tagCompound.getTagList("RescueChest Information");
-
     }
 
     /**
@@ -209,13 +211,15 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
      */
     @Override
     public boolean receiveClientEvent(int i, int j) {
+        String sourceMethod = "receiveClientEvent";
         if (i == 1) {
             numUsingPlayers = j;
         } else if (i == 2) {
-            facing = (byte) j;
-        } else if (i == 3) {
-            facing = (byte) (j & 0x7);
-            numUsingPlayers = (j & 0xF8) >> 3;
+            logger.logp(Level.FINER, sourceClass, sourceMethod, String.format("Client Event - Setting facing to %d", j));    
+            setFacing(j);
+            
+        } else {
+            super.receiveClientEvent(i, j);
         }
         return true;
     }
@@ -223,9 +227,10 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     public void rotateAround(ForgeDirection axis) {
         String sourceMethod="RotateAround";
         logger.entering(sourceClass, sourceMethod, axis);
-        byte newDirection = (byte) ForgeDirection.getOrientation(facing).getRotation(axis).ordinal();
+        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("rotateAround: Direction is %d", getFacing()));
+        int newDirection = ForgeDirection.getOrientation(getFacing()).getRotation(axis).ordinal();
         setFacing(newDirection);
-        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("Setting direction to %d", newDirection));
+        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("rotateAround: Setting direction to %d", newDirection));
         worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 2, getFacing());
         logger.exiting(sourceClass, sourceMethod, newDirection);
     }
@@ -237,8 +242,8 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         this.chestContents = chestContents;
     }
 
-    public void setFacing(byte chestFacing) {
-        this.facing = chestFacing;
+    public void setFacing(int newChestFacing) {
+        this.facing = newChestFacing;
     }
 
     @Override
@@ -303,7 +308,8 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         }
 
         if (worldObj != null && !worldObj.isRemote && ticksSinceSync < 0) {
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 3, ((numUsingPlayers << 3) & 0xF8) | (facing & 0x7));
+            worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 1, getNumUsingPlayers());
+            worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 2, getFacing());
         }
         if (!worldObj.isRemote && inventoryTouched) {
             inventoryTouched = false;
@@ -355,7 +361,7 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
             }
         }
         tagCompound.setTag("Inventory", itemList);
-        tagCompound.setByte("facing", facing);
+        tagCompound.setInteger("facing", getFacing() );
     }
 
     public boolean isHotBarActive() {
@@ -364,6 +370,17 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     public void setHotBarActive(boolean isHotBarActive) {
         this.isHotBarActive = isHotBarActive;
+    }
+    
+    
+    public Packet getDescriptionPacket() {
+       NBTTagCompound nbtTag = new NBTTagCompound();
+       this.writeToNBT(nbtTag);
+       return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 1, nbtTag);
+    }
+
+    public void onDataPacket(INetworkManager net, Packet132TileEntityData packet) {
+       readFromNBT(packet.customParam1);
     }
     
     

@@ -178,7 +178,7 @@ public class BlockRescueChest extends BlockContainer {
 
 	@Override
 	public void onBlockPlacedBy(World world, int i, int j, int k, EntityLiving entityliving, ItemStack itemStack) {
-		byte chestFacing = 0;
+		int chestFacing = 0;
 		int facing = MathHelper.floor_double((double) ((entityliving.rotationYaw * 4F) / 360F) + 0.5D) & 3;
 
 		switch (facing) {

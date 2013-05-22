@@ -122,8 +122,8 @@ public class RescueChest {
 
         rescueChestBlock = new BlockRescueChest(rescueChestBlockId);
 
-        GameRegistry.registerBlock(rescueChestBlock, "rescueChest");
-        GameRegistry.registerTileEntity(TileEntityRescueChest.class, "rescueChest");
+        GameRegistry.registerBlock(rescueChestBlock, "BlockRescueChest");
+        GameRegistry.registerTileEntity(TileEntityRescueChest.class, "TileEntityRescueChest");
         LanguageRegistry.addName(rescueChestBlock, "Rescue Chest");
 
         proxy.registerTileEntitySpecialRenderer();
