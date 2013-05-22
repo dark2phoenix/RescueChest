@@ -14,7 +14,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Property;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -30,16 +29,15 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import cpw.mods.fml.relauncher.FMLRelaunchLog;
-
 import dark2phoenix.mods.rescuechest.block.BlockRescueChest;
-import dark2phoenix.mods.rescuechest.client.renderer.TileEntityRescueChestRenderer;
 import dark2phoenix.mods.rescuechest.core.Localization;
+import dark2phoenix.mods.rescuechest.core.StringUtils;
 import dark2phoenix.mods.rescuechest.core.Version;
 import dark2phoenix.mods.rescuechest.core.handlers.PlayerLivingDeathEventHandler;
 import dark2phoenix.mods.rescuechest.core.proxy.CommonProxy;
 import dark2phoenix.mods.rescuechest.gui.GuiHandler;
 import dark2phoenix.mods.rescuechest.item.ItemHotBar;
+import dark2phoenix.mods.rescuechest.item.ItemWoodenCoin;
 import dark2phoenix.mods.rescuechest.lib.Reference;
 import dark2phoenix.mods.rescuechest.network.PacketHandler;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
@@ -49,10 +47,10 @@ import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 public class RescueChest {
 
     /** Common Mod Logger */
-    public static Logger        logger      = Logger.getLogger("RescueChest");
+    public static Logger        logger              = Logger.getLogger("RescueChest");
 
     /** this class's name */
-    String                      sourceClass = this.getClass().getName();
+    String                      sourceClass         = this.getClass().getName();
 
     /** Forge Proxy Information */
     @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
@@ -64,15 +62,20 @@ public class RescueChest {
     @Instance("RescueChest")
     public static RescueChest   instance;
 
-    public static final String  modid       = Reference.MOD_ID;
+    public static final String  modid               = Reference.MOD_ID;
 
+    /* Setup block/item */
     private int                 rescueChestBlockId;
     private int                 hotbarItemId;
+    private int                 woodenCoinItemId;
 
+    /* Setup references to blocks/item */
     public static Block         rescueChestBlock;
     public static Item          hotbarItem;
+    public static Item          woodenCoinItem;
+
     public static Configuration rescueChestConfig;
-    private static int rescueChestRenderID = RenderingRegistry.getNextAvailableRenderId();
+    private static int          rescueChestRenderID = RenderingRegistry.getNextAvailableRenderId();
 
     /**
      * @return the dimChestRenderID
@@ -82,7 +85,8 @@ public class RescueChest {
     }
 
     /**
-     * @param dimChestRenderID the dimChestRenderID to set
+     * @param dimChestRenderID
+     *            the dimChestRenderID to set
      */
     public static void setDimChestRenderID(int dimChestRenderID) {
         RescueChest.rescueChestRenderID = dimChestRenderID;
@@ -102,6 +106,7 @@ public class RescueChest {
             rescueChestConfig.load();
             rescueChestBlockId = rescueChestConfig.getBlock("RescueChest", 501).getInt(501);
             hotbarItemId = rescueChestConfig.getItem("HotbarItem", 29775).getInt(29775);
+            woodenCoinItemId = rescueChestConfig.getItem("WoodenCoinItem", 29776).getInt(29776);
             logger.logp(Level.FINE, sourceClass, sourceMethod, "Rescue Chest Block ID is " + rescueChestBlockId);
         } catch (Exception e) {
             FMLLog.log(Level.SEVERE, e, "Rescue Chest could not load configuration");
@@ -118,19 +123,24 @@ public class RescueChest {
     @Init
     public void load(FMLInitializationEvent event) {
 
-        // Setup our chest block
+        // Setup Blocks
 
         rescueChestBlock = new BlockRescueChest(rescueChestBlockId);
 
         GameRegistry.registerBlock(rescueChestBlock, "BlockRescueChest");
         GameRegistry.registerTileEntity(TileEntityRescueChest.class, "TileEntityRescueChest");
-        LanguageRegistry.addName(rescueChestBlock, "Rescue Chest");
+        LanguageRegistry.addName(rescueChestBlock, StringUtils.localize("block.rescuechest.name"));
 
         proxy.registerTileEntitySpecialRenderer();
         proxy.registerRenderInformation();
 
+        // Setup Items
+
         hotbarItem = new ItemHotBar(hotbarItemId);
         LanguageRegistry.addName(hotbarItem, "Hotbar Item");
+
+        woodenCoinItem = new ItemWoodenCoin(woodenCoinItemId);
+        LanguageRegistry.addName(woodenCoinItem, StringUtils.localize("item.woodencoin.name"));
 
         NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
 
@@ -157,16 +167,10 @@ public class RescueChest {
     @PostInit
     public void postInit(FMLPostInitializationEvent event) {
 
-        // Define our ore dictionary resources so other variations of these
-        // elements will work
-        // OreDictionary.registerOre("plankWood", new ItemStack(Block.planks));
-        // OreDictionary.registerOre("ingotGold", new
-        // ItemStack(Item.ingotGold));
-        //
-        // Define our ore dictionary resources so other variations of these
-        // elements will work
-
         List<String> oreNameList = Arrays.asList(OreDictionary.getOreNames());
+
+        // Define our ore dictionary resources so other variations of these
+        // elements will work, but only if they have not already been registered
 
         if (!oreNameList.contains("plankWood")) {
             OreDictionary.registerOre("plankWood", new ItemStack(Block.planks));
@@ -174,8 +178,12 @@ public class RescueChest {
         if (!oreNameList.contains("ingotGold")) {
             OreDictionary.registerOre("ingotGold", new ItemStack(Item.ingotGold));
         }
+        if (!oreNameList.contains("woodLog")) {
+            OreDictionary.registerOre("woodLog", new ItemStack(Block.wood));
+        }
 
         // Recipes to add
         CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(rescueChestBlock), true, new Object[] { "PPP", "PGP", "PPP", Character.valueOf('P'), "plankWood", Character.valueOf('G'), "ingotGold" }));
+        CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(woodenCoinItem), true, new Object[] { " P ", "PLP", " P ", Character.valueOf('P'), "plankWood", Character.valueOf('L'), "woodLog" }));
     }
 }
