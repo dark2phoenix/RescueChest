@@ -3,7 +3,6 @@ package dark2phoenix.mods.rescuechest.client;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.ChestItemRenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import dark2phoenix.mods.rescuechest.RescueChest;
 import dark2phoenix.mods.rescuechest.configuration.Blocks;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 

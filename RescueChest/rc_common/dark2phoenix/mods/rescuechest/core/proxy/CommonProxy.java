@@ -6,10 +6,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
-import dark2phoenix.mods.rescuechest.client.audio.SoundHandler;
 import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
 import dark2phoenix.mods.rescuechest.lib.Constants;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
@@ -50,7 +48,7 @@ public class CommonProxy implements IGuiHandler {
     public void registerSoundHandler() {
     }
 
-    public void handleTileEntityPacket(int x, int y, int z, ForgeDirection inOrientation, int inUpgradeValue) {
+    public void handleTileEntityPacket(int x, int y, int z, ForgeDirection inOrientation, int inUpgradeValue, int dimension, String owerName) {
 
     }
     

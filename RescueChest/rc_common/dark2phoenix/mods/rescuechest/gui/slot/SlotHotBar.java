@@ -1,21 +1,14 @@
 package dark2phoenix.mods.rescuechest.gui.slot;
 
-import java.util.logging.Logger;
-
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dark2phoenix.mods.rescuechest.RescueChest;
 import dark2phoenix.mods.rescuechest.item.ItemHotBar;
 
 public class SlotHotBar extends Slot {
-
-    private Logger  logger      = RescueChest.logger;
-
-    private String  sourceClass = this.getClass().getName();
 
     private boolean isActive    = false;
 

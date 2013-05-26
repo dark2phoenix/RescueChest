@@ -1,37 +1,23 @@
 package dark2phoenix.mods.rescuechest.client.renderer;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import net.minecraft.client.model.ModelChest;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import com.google.common.primitives.SignedBytes;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dark2phoenix.mods.rescuechest.RescueChest;
 import dark2phoenix.mods.rescuechest.lib.Reference;
-import dark2phoenix.mods.rescuechest.model.ModelRescueChest;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 @SideOnly(Side.CLIENT)
 public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
 
-    private RenderItem       itemRenderer;
-
     /** The normal small chest model. */
     private ModelChest chestModel  = new ModelChest();
-    private Logger           logger      = RescueChest.logger;
-    private String           sourceClass = this.getClass().getName();
 
     public TileEntityRescueChestRenderer() {
         super();
@@ -42,12 +28,11 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
      * Renders the TileEntity for the chest at a position.
      */
     public void renderTileEntityRescueChestAt(TileEntityRescueChest tileEntity, double x, double y, double z, float partialTick) {
-        String sourceMethod="renderTileEntityRescueChestAt";
         if (tileEntity == null) { 
             return;
         }
 
-        // face west
+        // Default direction
         ForgeDirection blockFacingDirection = ForgeDirection.SOUTH;
 
         if (tileEntity.getWorldObj() != null ) {

@@ -1,12 +1,9 @@
 package dark2phoenix.mods.rescuechest.tileentity;
 
-import java.lang.reflect.Proxy;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -22,10 +19,8 @@ import dark2phoenix.mods.rescuechest.configuration.Blocks;
 import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
 import dark2phoenix.mods.rescuechest.item.ItemChestUpgradeCoin;
 import dark2phoenix.mods.rescuechest.lib.Reference;
-import dark2phoenix.mods.rescuechest.lib.Sounds;
 import dark2phoenix.mods.rescuechest.network.PacketTypeHandler;
 import dark2phoenix.mods.rescuechest.network.packet.PacketChestUpdate;
-import dark2phoenix.mods.rescuechest.network.packet.PacketSoundEvent;
 
 public class TileEntityRescueChest extends TileEntity implements IInventory {
 
@@ -69,6 +64,12 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     /** Array of the current chest contents */
     ItemStack[]         chestContents;
+    
+    /** The name of owner of the chest.  e.g. who put the first coin in it */
+    String ownerName;
+    
+    /** Dimension where the chest was placed */
+    int dimension;
 
     /**
      * Total number of slots
@@ -91,6 +92,34 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
      */
     public void setUpgradeValue(int upgradeValue) {
         this.upgradeValue = upgradeValue;
+    }
+
+    /**
+     * @return the owerName
+     */
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    /**
+     * @param owerName the owerName to set
+     */
+    public void setOwnerName(String owerName) {
+        this.ownerName = owerName;
+    }
+
+    /**
+     * @return the dimension
+     */
+    public int getDimension() {
+        return dimension;
+    }
+
+    /**
+     * @param dimension the dimension to set
+     */
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
     }
 
     public TileEntityRescueChest() {
@@ -225,7 +254,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
-        String sourceMethod = "readFromNBT";
         super.readFromNBT(tagCompound);
 
         NBTTagList tagList = tagCompound.getTagList("Inventory");
@@ -238,6 +266,10 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         }
         setOrientation(tagCompound.getByte("Orientation"));
         upgradeValue = tagCompound.getInteger("UpgradeValue");
+        dimension = tagCompound.getInteger("Dimension");
+        ownerName = tagCompound.getString("Owner");
+        
+        
         NBTTagList rescueChestTagList = tagCompound.getTagList("RescueChest Information");
     }
 
@@ -382,7 +414,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
-        String sourceMethod = "WriteToNBT";
         super.writeToNBT(tagCompound);
 
         NBTTagList itemList = new NBTTagList();
@@ -398,6 +429,8 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         tagCompound.setTag("Inventory", itemList);
         tagCompound.setByte("Orientation", (byte) orientation.ordinal());
         tagCompound.setInteger("UpgradeValue", upgradeValue);
+        tagCompound.setInteger("Dimension", dimension);
+        tagCompound.setString("Owner", ownerName);
     }
 
     public boolean isHotBarActive() {
@@ -411,12 +444,11 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     @Override
     public Packet getDescriptionPacket() {
 
-        return PacketTypeHandler.populatePacket(new PacketChestUpdate(xCoord, yCoord, zCoord, orientation, upgradeValue));
+        return PacketTypeHandler.populatePacket(new PacketChestUpdate(xCoord, yCoord, zCoord, orientation, upgradeValue, dimension, ownerName));
     }
     
     
     public boolean applyUpgradeItem(ItemChestUpgradeCoin coin) {
-        String sourceMethod = "applyUpgradeItem";
         int coinValue = coin.getUpgradeValue();
         
         if (upgradeValue == Reference.MAXIMUM_CHEST_UPGRADE_VALUE ) {
@@ -425,13 +457,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         else {
             upgradeValue =  ( coinValue + upgradeValue >= Reference.MAXIMUM_CHEST_UPGRADE_VALUE ) ? Reference.MAXIMUM_CHEST_UPGRADE_VALUE
                          :  ( coinValue + upgradeValue );
-            if (RescueChest.proxy.getClass() != null ) {
-                logger.logp(Level.FINER, sourceClass, sourceMethod, "Sending packet to play sound");
-            PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 64D, RescueChest.proxy.getClientWorld().provider.dimensionId, PacketTypeHandler.populatePacket(new PacketSoundEvent(Sounds.INSERT_COIN, this.xCoord, this.yCoord, this.zCoord, 1.5F, 1.5F)));
-//            player.worldObj.playSoundAtEntity(player, Sounds.INSERT_COIN, 0.8F, 0.8F + world.rand.nextFloat() * 0.4F);
-//            world.playSoundEffect(player.posX, player.posY, player.posZ, Sounds.INSERT_COIN, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
-            }
-            
         }
         return true;
     }

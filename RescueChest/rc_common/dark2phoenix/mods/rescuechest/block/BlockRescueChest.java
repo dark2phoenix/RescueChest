@@ -186,7 +186,13 @@ public class BlockRescueChest extends BlockContainer {
 
 		TileEntity te = world.getBlockTileEntity(i, j, k);
 		if (te != null && te instanceof TileEntityRescueChest) {
-			((TileEntityRescueChest) te).setOrientation(direction);
+		    TileEntityRescueChest rcte = (TileEntityRescueChest) te;
+			rcte.setOrientation(direction);
+			rcte.setDimension(entityLiving.worldObj.getWorldInfo().getDimension());
+			if (entityLiving instanceof EntityPlayer) {
+			    EntityPlayer player = (EntityPlayer) entityLiving;
+			    rcte.setOwnerName(player.getCommandSenderName());
+			}
 			world.markBlockForUpdate(i, j, k);
 		}
 

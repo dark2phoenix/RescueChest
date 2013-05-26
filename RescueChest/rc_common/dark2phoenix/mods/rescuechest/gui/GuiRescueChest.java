@@ -11,10 +11,14 @@ import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class GuiRescueChest extends GuiContainer {
+    
+    TileEntityRescueChest rcte;
+    
 
 	public GuiRescueChest(InventoryPlayer inventoryPlayer, TileEntityRescueChest tileEntity) {
 		// the container is instantiated and passed to the superclass for handling
 		super(new ContainerRescueChest(inventoryPlayer, tileEntity, false));
+		rcte = tileEntity;
 		this.xSize = 184;
 		this.ySize = 184;
 		this.allowUserInput = false;
@@ -23,7 +27,9 @@ public class GuiRescueChest extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 	    // draws the specified string. Args: string, x, y, color, dropShadow
-		fontRenderer.drawString(StringUtils.localize("gui.rescuechest.name"), 85, 7, 0xFFAA00, false);
+		//fontRenderer.drawString(StringUtils.localize("gui.rescuechest.name"), 85, 7, 0xFFAA00, false);
+	    fontRenderer.drawString(rcte.getOwnerName(), 85, 7, 0xFFAA00, false);
+		
 	}
 
 	@Override

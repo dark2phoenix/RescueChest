@@ -121,8 +121,6 @@ public class RescueChest {
         // Register custom events
         MinecraftForge.EVENT_BUS.register(new PlayerLivingDeathEventHandler());
         MinecraftForge.EVENT_BUS.register(this);
-        
-
     }
 
     public RescueChest() {
@@ -133,7 +131,6 @@ public class RescueChest {
         logger.setUseParentHandlers(true);
     }
 
-    @SuppressWarnings("unchecked")
     @PostInit
     public void postInit(FMLPostInitializationEvent event) {
         List<String> oreNameList = Arrays.asList(OreDictionary.getOreNames());

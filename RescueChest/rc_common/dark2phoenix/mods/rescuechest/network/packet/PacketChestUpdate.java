@@ -12,23 +12,27 @@ import dark2phoenix.mods.rescuechest.network.PacketTypeHandler;
 
 public class PacketChestUpdate extends PacketRescueChest {
 
-    public int x, y, z;
-    public byte orientation;
-    public int upgradeValue;
+    int x, y, z;
+    byte orientation;
+    int upgradeValue;
+    int dimension;
+    String ownerName;
     
     public PacketChestUpdate() {
 
         super(PacketTypeHandler.CHEST, true);
     }
 
-    public PacketChestUpdate(int x, int y, int z, ForgeDirection orientation, int upgradeValue) {
+    public PacketChestUpdate(int inX, int inY, int inZ, ForgeDirection inOrientation, int inUpgradeValue, int inDimension, String inOwnerName) {
 
         super(PacketTypeHandler.CHEST, true);
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.orientation = (byte) orientation.ordinal();
-        this.upgradeValue = upgradeValue;
+        this.x = inX;
+        this.y = inY;
+        this.z = inZ;
+        this.orientation = (byte) inOrientation.ordinal();
+        this.upgradeValue = inUpgradeValue;
+        this.dimension = inDimension;
+        this.ownerName = inOwnerName;
 
     }
 
@@ -40,6 +44,8 @@ public class PacketChestUpdate extends PacketRescueChest {
         data.writeInt(z);
         data.writeByte(orientation);
         data.writeInt(upgradeValue);
+        data.writeInt(dimension);
+        data.writeUTF(ownerName);
     }
 
     @Override
@@ -50,13 +56,15 @@ public class PacketChestUpdate extends PacketRescueChest {
         z = data.readInt();
         orientation = data.readByte();
         upgradeValue = data.readInt();
+        dimension = data.readInt();
+        ownerName = data.readUTF();
 
     }
 
     @Override
     public void execute(INetworkManager manager, Player player) {
 
-        RescueChest.proxy.handleTileEntityPacket(x, y, z, ForgeDirection.getOrientation(orientation), upgradeValue);
+        RescueChest.proxy.handleTileEntityPacket(x, y, z, ForgeDirection.getOrientation(orientation), upgradeValue, dimension, ownerName);
     }
 
 }

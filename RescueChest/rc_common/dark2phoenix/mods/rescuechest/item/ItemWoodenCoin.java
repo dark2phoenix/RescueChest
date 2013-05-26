@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import dark2phoenix.mods.rescuechest.RescueChest;
 import dark2phoenix.mods.rescuechest.configuration.Blocks;
 import dark2phoenix.mods.rescuechest.lib.Constants.UpgradeCoinType;
 import dark2phoenix.mods.rescuechest.lib.Sounds;
@@ -45,6 +46,7 @@ public class ItemWoodenCoin extends ItemChestUpgradeCoin {
         }
         if ( discardItem ) {
             stack.stackSize--;
+            PacketDispatcher.sendPacketToAllAround(X, Y, Z, 64D, RescueChest.proxy.getClientWorld().provider.dimensionId, PacketTypeHandler.populatePacket(new PacketSoundEvent(Sounds.INSERT_COIN, X, Y, Z, 0.5F, 1.5F)));
             world.addBlockEvent(X,Y,Z, Blocks.RESCUECHEST_ID, 3, rcte.getUpgradeValue());
             world.markBlockForUpdate(X, Y, Z);
             return true;

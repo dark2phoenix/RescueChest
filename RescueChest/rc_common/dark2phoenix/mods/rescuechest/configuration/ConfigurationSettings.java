@@ -1,7 +1,5 @@
 package dark2phoenix.mods.rescuechest.configuration;
 
-import net.minecraftforge.common.Property;
-import dark2phoenix.mods.rescuechest.core.Localization;
 
 public class ConfigurationSettings {
 

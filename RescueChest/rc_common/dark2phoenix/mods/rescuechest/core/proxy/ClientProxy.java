@@ -53,7 +53,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void handleTileEntityPacket(int x, int y, int z, ForgeDirection inOrientation, int inUpgradeValue) {
+    public void handleTileEntityPacket(int x, int y, int z, ForgeDirection inOrientation, int inUpgradeValue, int dimension, String owerName) {
 
         TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(x, y, z);
 

@@ -6,8 +6,6 @@ import java.io.File;
 import java.util.logging.Level;
 
 import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
-
 import cpw.mods.fml.common.FMLLog;
 import dark2phoenix.mods.rescuechest.lib.Reference;
 
@@ -36,13 +34,8 @@ public class ConfigurationHandler {
             ConfigurationSettings.LAST_DISCOVERED_VERSION_TYPE = configuration.get(CATEGORY_GENERAL, ConfigurationSettings.LAST_DISCOVERED_VERSION_TYPE_CONFIGNAME, ConfigurationSettings.LAST_DISCOVERED_VERSION_TYPE_DEFAULT).getString();
             ConfigurationSettings.DEFAULT_LANGUAGE = configuration.get(CATEGORY_GENERAL, ConfigurationSettings.DEFAULT_LANGUAGE_CONFIGNAME, ConfigurationSettings.DEFAULT_LANGUAGE).getString();
             
-            //            Property defaultLanguageProp = rescueChestConfig.get("general", "DefaultLanguage", "en_US");
-//            Localization.addLocalization("/lang/rescuechest/", defaultLanguageProp.getString());
-
-
             /* Graphic configs */
             ConfigurationSettings.ENABLE_PARTICLE_FX = configuration.get(CATEGORY_GRAPHICS, ConfigurationSettings.ENABLE_PARTICLE_FX_CONFIGNAME, ConfigurationSettings.ENABLE_PARTICLE_FX_DEFAULT).getBoolean(ConfigurationSettings.ENABLE_PARTICLE_FX_DEFAULT);
-
 
             /* Audio configs */
             ConfigurationSettings.ENABLE_SOUNDS = configuration.get(CATEGORY_AUDIO, ConfigurationSettings.ENABLE_SOUNDS_CONFIGNAME, ConfigurationSettings.ENABLE_SOUNDS_DEFAULT).getBoolean( ConfigurationSettings.ENABLE_SOUNDS_DEFAULT);
