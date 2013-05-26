@@ -19,6 +19,7 @@ import com.google.common.primitives.SignedBytes;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dark2phoenix.mods.rescuechest.RescueChest;
+import dark2phoenix.mods.rescuechest.lib.Reference;
 import dark2phoenix.mods.rescuechest.model.ModelRescueChest;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
@@ -47,13 +48,13 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
         }
 
         // face west
-        int blockFacingDirection = 3;
+        ForgeDirection blockFacingDirection = ForgeDirection.SOUTH;
 
         if (tileEntity.getWorldObj() != null ) {
-            blockFacingDirection = tileEntity.getFacing();
+            blockFacingDirection = tileEntity.getOrientation();
         } 
         
-        this.bindTextureByName(String.format("/mods/%s/textures/model/%s", RescueChest.modid.toLowerCase(), "RescueChestTexture.png"));
+        this.bindTextureByName(String.format("/mods/%s/textures/model/%s", Reference.MOD_ID.toLowerCase(), "RescueChestTexture.png"));
 
         GL11.glPushMatrix();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -61,22 +62,22 @@ public class TileEntityRescueChestRenderer extends TileEntitySpecialRenderer {
         GL11.glTranslatef((float) x, (float) y + 1.0F, (float) z + 1.0F);
         GL11.glScalef(1.0F, -1.0F, -1.0F);
         GL11.glTranslatef(0.5F, 0.5F, 0.5F);
-        short facingDirection = 0;
+        
+        short facingDirection = 0;        
 
-        if (blockFacingDirection == 2) {
-            facingDirection = 180;
-        }
-
-        if (blockFacingDirection == 3) {
-            facingDirection = 0;
-        }
-
-        if (blockFacingDirection == 4) {
-            facingDirection = 90;
-        }
-
-        if (blockFacingDirection == 5) {
-            facingDirection = -90;
+        if (blockFacingDirection != null) {
+            if (blockFacingDirection == ForgeDirection.NORTH) {
+                facingDirection = 180;
+            }
+            else if (blockFacingDirection == ForgeDirection.SOUTH) {
+                facingDirection = 0;
+            }
+            else if (blockFacingDirection == ForgeDirection.WEST) {
+                facingDirection = 90;
+            }
+            else if (blockFacingDirection == ForgeDirection.EAST) {
+                facingDirection = -90;
+            }
         }
         
         GL11.glRotatef((float) facingDirection, 0.0F, 1.0F, 0.0F);

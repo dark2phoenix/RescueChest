@@ -1,24 +1,17 @@
 package dark2phoenix.mods.rescuechest.core.proxy;
 
-import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.Loader;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
+import dark2phoenix.mods.rescuechest.client.audio.SoundHandler;
 import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
+import dark2phoenix.mods.rescuechest.lib.Constants;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class CommonProxy implements IGuiHandler {
@@ -52,5 +45,18 @@ public class CommonProxy implements IGuiHandler {
     public String getCurrentLanguage() {
         return Minecraft.getMinecraft().gameSettings.language;
     }
+    
 
+    public void registerSoundHandler() {
+    }
+
+    public void handleTileEntityPacket(int x, int y, int z, ForgeDirection inOrientation, int inUpgradeValue) {
+
+    }
+    
+    public void initTileEntities() {
+        GameRegistry.registerTileEntity(TileEntityRescueChest.class, Constants.TILE_ENTITY_RESCUE_CHEST_NAME);
+    }
+
+    
 }

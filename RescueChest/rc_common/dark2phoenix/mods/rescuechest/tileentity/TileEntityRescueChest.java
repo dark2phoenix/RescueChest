@@ -1,24 +1,31 @@
 package dark2phoenix.mods.rescuechest.tileentity;
 
+import java.lang.reflect.Proxy;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import dark2phoenix.mods.rescuechest.RescueChest;
-import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.ForgeDirection;
+import dark2phoenix.mods.rescuechest.RescueChest;
+import dark2phoenix.mods.rescuechest.configuration.Blocks;
+import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
+import dark2phoenix.mods.rescuechest.item.ItemChestUpgradeCoin;
+import dark2phoenix.mods.rescuechest.lib.Reference;
+import dark2phoenix.mods.rescuechest.lib.Sounds;
+import dark2phoenix.mods.rescuechest.network.PacketTypeHandler;
+import dark2phoenix.mods.rescuechest.network.packet.PacketChestUpdate;
+import dark2phoenix.mods.rescuechest.network.packet.PacketSoundEvent;
 
 public class TileEntityRescueChest extends TileEntity implements IInventory {
 
@@ -27,7 +34,23 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     private String      sourceClass = this.getClass().getName();
 
     /** Direction the chest is currently facing **/
-    private int        facing;
+    private ForgeDirection orientation;
+    
+    
+    public ForgeDirection getOrientation() {
+
+        return orientation;
+    }
+
+    public void setOrientation(ForgeDirection orientation) {
+
+        this.orientation = orientation;
+    }
+
+    public void setOrientation(int orientation) {
+
+        this.orientation = ForgeDirection.getOrientation(orientation);
+    }
 
     /** The current angle of the lid (between 0 and 1) */
     float        lidAngle    = 0.0F;
@@ -54,9 +77,25 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     
     private boolean isHotBarActive = false;
     
+    private int upgradeValue = 0;
     
+    /**
+     * @return the upgradeValue
+     */
+    public int getUpgradeValue() {
+        return upgradeValue;
+    }
+
+    /**
+     * @param upgradeValue the upgradeValue to set
+     */
+    public void setUpgradeValue(int upgradeValue) {
+        this.upgradeValue = upgradeValue;
+    }
+
     public TileEntityRescueChest() {
         chestContents = new ItemStack[getSizeInventory()];
+        orientation = ForgeDirection.SOUTH;
     }
 
     /**
@@ -75,7 +114,7 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
 
         numUsingPlayers = (numUsingPlayers-- < 0) ? 0 : numUsingPlayers;
         logger.logp(Level.FINEST, sourceClass, sourceMethod, "Decrementing numUsingPlayers by 1 to : " + numUsingPlayers);
-        worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 1, numUsingPlayers);
+        worldObj.addBlockEvent(xCoord, yCoord, zCoord, Blocks.RESCUECHEST_ID, 1, numUsingPlayers);
     }
 
     @Override
@@ -99,10 +138,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
      */
     public ItemStack[] getChestContents() {
         return chestContents;
-    }
-
-    public int getFacing() {
-        return this.facing;
     }
 
     @Override
@@ -184,7 +219,7 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         }
         numUsingPlayers++;
         logger.logp(Level.FINEST, sourceClass, sourceMethod, "Incrementing numUsingPlayers by 1 to : " + numUsingPlayers);
-        worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 1, numUsingPlayers);
+        worldObj.addBlockEvent(xCoord, yCoord, zCoord, Blocks.RESCUECHEST_ID, 1, numUsingPlayers);
         logger.exiting(sourceClass, sourceMethod);
     }
 
@@ -201,7 +236,8 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
                 chestContents[slot] = ItemStack.loadItemStackFromNBT(tag);
             }
         }
-        setFacing(tagCompound.getInteger("facing"));
+        setOrientation(tagCompound.getByte("Orientation"));
+        upgradeValue = tagCompound.getInteger("UpgradeValue");
         NBTTagList rescueChestTagList = tagCompound.getTagList("RescueChest Information");
     }
 
@@ -210,16 +246,19 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
      * argument, see World.sendClientEvent
      */
     @Override
-    public boolean receiveClientEvent(int i, int j) {
+    public boolean receiveClientEvent(int eventNumber, int eventData) {
         String sourceMethod = "receiveClientEvent";
-        if (i == 1) {
-            numUsingPlayers = j;
-        } else if (i == 2) {
-            logger.logp(Level.FINER, sourceClass, sourceMethod, String.format("Client Event - Setting facing to %d", j));    
-            setFacing(j);
+        if (eventNumber == 1) {
+            numUsingPlayers = eventData;
+        } else if (eventNumber == 2) {
+            logger.logp(Level.FINER, sourceClass, sourceMethod, String.format("Client Event - Setting facing to %s", ForgeDirection.getOrientation(eventData).name()));    
+            orientation = ForgeDirection.getOrientation(eventData);
+        } else if ( eventNumber == 3) {
+            logger.logp(Level.FINER, sourceClass, sourceMethod, String.format("Client Event - Setting upgrade value to %d", eventData));
+            setUpgradeValue(eventData);
             
         } else {
-            super.receiveClientEvent(i, j);
+            super.receiveClientEvent(eventNumber, eventData);
         }
         return true;
     }
@@ -227,11 +266,11 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
     public void rotateAround(ForgeDirection axis) {
         String sourceMethod="RotateAround";
         logger.entering(sourceClass, sourceMethod, axis);
-        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("rotateAround: Direction is %d", getFacing()));
-        int newDirection = ForgeDirection.getOrientation(getFacing()).getRotation(axis).ordinal();
-        setFacing(newDirection);
-        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("rotateAround: Setting direction to %d", newDirection));
-        worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 2, getFacing());
+        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("rotateAround: Direction is %s", orientation.name()));
+        ForgeDirection newDirection = orientation.getRotation(axis);
+        logger.logp(Level.FINE, sourceClass, sourceMethod, String.format("rotateAround: Setting direction to %s", newDirection.name()));
+        orientation = newDirection;
+        worldObj.addBlockEvent(xCoord, yCoord, zCoord, Blocks.RESCUECHEST_ID, 2, orientation.ordinal());
         logger.exiting(sourceClass, sourceMethod, newDirection);
     }
 
@@ -240,10 +279,6 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
      */
     public void setChestContents(ItemStack[] chestContents) {
         this.chestContents = chestContents;
-    }
-
-    public void setFacing(int newChestFacing) {
-        this.facing = newChestFacing;
     }
 
     @Override
@@ -308,8 +343,8 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         }
 
         if (worldObj != null && !worldObj.isRemote && ticksSinceSync < 0) {
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 1, getNumUsingPlayers());
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, RescueChest.rescueChestBlock.blockID, 2, getFacing());
+            worldObj.addBlockEvent(xCoord, yCoord, zCoord, Blocks.RESCUECHEST_ID, 1, numUsingPlayers);
+            worldObj.addBlockEvent(xCoord, yCoord, zCoord, Blocks.RESCUECHEST_ID, 2, orientation.ordinal());
         }
         if (!worldObj.isRemote && inventoryTouched) {
             inventoryTouched = false;
@@ -361,7 +396,8 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
             }
         }
         tagCompound.setTag("Inventory", itemList);
-        tagCompound.setInteger("facing", getFacing() );
+        tagCompound.setByte("Orientation", (byte) orientation.ordinal());
+        tagCompound.setInteger("UpgradeValue", upgradeValue);
     }
 
     public boolean isHotBarActive() {
@@ -372,15 +408,32 @@ public class TileEntityRescueChest extends TileEntity implements IInventory {
         this.isHotBarActive = isHotBarActive;
     }
     
-    
+    @Override
     public Packet getDescriptionPacket() {
-       NBTTagCompound nbtTag = new NBTTagCompound();
-       this.writeToNBT(nbtTag);
-       return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 1, nbtTag);
-    }
 
-    public void onDataPacket(INetworkManager net, Packet132TileEntityData packet) {
-       readFromNBT(packet.customParam1);
+        return PacketTypeHandler.populatePacket(new PacketChestUpdate(xCoord, yCoord, zCoord, orientation, upgradeValue));
+    }
+    
+    
+    public boolean applyUpgradeItem(ItemChestUpgradeCoin coin) {
+        String sourceMethod = "applyUpgradeItem";
+        int coinValue = coin.getUpgradeValue();
+        
+        if (upgradeValue == Reference.MAXIMUM_CHEST_UPGRADE_VALUE ) {
+            return false;
+        }
+        else {
+            upgradeValue =  ( coinValue + upgradeValue >= Reference.MAXIMUM_CHEST_UPGRADE_VALUE ) ? Reference.MAXIMUM_CHEST_UPGRADE_VALUE
+                         :  ( coinValue + upgradeValue );
+            if (RescueChest.proxy.getClass() != null ) {
+                logger.logp(Level.FINER, sourceClass, sourceMethod, "Sending packet to play sound");
+            PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 64D, RescueChest.proxy.getClientWorld().provider.dimensionId, PacketTypeHandler.populatePacket(new PacketSoundEvent(Sounds.INSERT_COIN, this.xCoord, this.yCoord, this.zCoord, 1.5F, 1.5F)));
+//            player.worldObj.playSoundAtEntity(player, Sounds.INSERT_COIN, 0.8F, 0.8F + world.rand.nextFloat() * 0.4F);
+//            world.playSoundEffect(player.posX, player.posY, player.posZ, Sounds.INSERT_COIN, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+            }
+            
+        }
+        return true;
     }
     
     

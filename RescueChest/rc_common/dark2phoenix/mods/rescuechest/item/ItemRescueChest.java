@@ -1,7 +1,6 @@
 package dark2phoenix.mods.rescuechest.item;
 
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 
 public class ItemRescueChest extends ItemBlock {
 

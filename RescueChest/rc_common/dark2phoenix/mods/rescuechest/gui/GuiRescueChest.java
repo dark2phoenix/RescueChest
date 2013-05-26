@@ -2,11 +2,11 @@ package dark2phoenix.mods.rescuechest.gui;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
+
 import org.lwjgl.opengl.GL11;
 
+import dark2phoenix.mods.rescuechest.configuration.Blocks;
 import dark2phoenix.mods.rescuechest.core.StringUtils;
-
-import dark2phoenix.mods.rescuechest.RescueChest;
 import dark2phoenix.mods.rescuechest.inventory.ContainerRescueChest;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
@@ -29,7 +29,7 @@ public class GuiRescueChest extends GuiContainer {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
 		// draw your Gui here, only thing you need to change is the path
-		String texture = String.format("/mods/%s/textures/gui/%s", RescueChest.modid.toLowerCase(), "RescueChestContainer.png");
+		String texture = String.format("/mods/%s/textures/gui/%s", Blocks.RESCUE_CHEST_NAME.toLowerCase(), "RescueChestContainer.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(texture);
 		int x = (width - xSize) / 2;

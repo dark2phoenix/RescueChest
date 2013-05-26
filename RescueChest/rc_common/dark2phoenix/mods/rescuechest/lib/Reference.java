@@ -16,6 +16,11 @@ public class Reference {
         public static final String CLIENT_PROXY_CLASS = "dark2phoenix.mods.rescuechest.core.proxy.ClientProxy";
         public static final int VERSION_CHECK_ATTEMPTS = 3;
         public static final float MODEL_TEXTURE_OFFSET = 0.0002F;
+        
+        
+        public static final int MAXIMUM_CHEST_UPGRADE_VALUE = 16;
+        
+        public static final String CHANNEL_NAME = "RescueChest";
 
 
     

@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.ChestItemRenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import dark2phoenix.mods.rescuechest.RescueChest;
+import dark2phoenix.mods.rescuechest.configuration.Blocks;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class RescueChestItemRenderHelper extends ChestItemRenderHelper {
@@ -13,7 +14,7 @@ public class RescueChestItemRenderHelper extends ChestItemRenderHelper {
      */
     @Override
     public void renderChest(Block blockToRender, int i, float f) {
-        if (blockToRender.blockID == RescueChest.rescueChestBlock.blockID) {
+        if (blockToRender.blockID == Blocks.RESCUECHEST_ID) {
             TileEntityRenderer.instance.renderTileEntityAt( new TileEntityRescueChest(), 0.0D, 0.0D, 0.0D, 0.0F);
         }
         else {

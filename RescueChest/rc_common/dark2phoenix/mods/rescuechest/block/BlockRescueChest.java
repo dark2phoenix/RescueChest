@@ -28,7 +28,9 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dark2phoenix.mods.rescuechest.RescueChest;
+import dark2phoenix.mods.rescuechest.configuration.Blocks;
 import dark2phoenix.mods.rescuechest.lib.Constants;
+import dark2phoenix.mods.rescuechest.lib.Reference;
 import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 public class BlockRescueChest extends BlockContainer {
@@ -52,19 +54,6 @@ public class BlockRescueChest extends BlockContainer {
      * Randomizer used when the block is broken and items are dropped
      */
     private Random random;
-    
-    /**
-     * Name of the block
-     */
-    private String name = "RescueChest";
-
-    /**
-     * Returns the name of the block
-     * @return The name of the block
-     */
-    public String getName() {
-        return name;
-    }
     
     @SideOnly(Side.CLIENT)
     private Icon[] icons;
@@ -104,12 +93,11 @@ public class BlockRescueChest extends BlockContainer {
 	 @SideOnly(Side.CLIENT)
 	 public void registerIcons(IconRegister par1IconRegister) {
 	     
-	     String modName = RescueChest.modid;
-
 	     icons = new Icon[3];
+
 	     int i = 0;
          for (String s : sideNames) {
-             icons[i++] = par1IconRegister.registerIcon(String.format("%s:%s_%s", modName, getName(), s));
+             icons[i++] = par1IconRegister.registerIcon(String.format("%s:%s_%s", Reference.MOD_ID.toLowerCase(), Blocks.RESCUE_CHEST_NAME, s));
          }
 
 	 }
@@ -177,31 +165,28 @@ public class BlockRescueChest extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int i, int j, int k, EntityLiving entityliving, ItemStack itemStack) {
-		int chestFacing = 0;
-		int facing = MathHelper.floor_double((double) ((entityliving.rotationYaw * 4F) / 360F) + 0.5D) & 3;
+	public void onBlockPlacedBy(World world, int i, int j, int k, EntityLiving entityLiving, ItemStack itemStack) {
 
-		switch (facing) {
-		case 0:
-			chestFacing = 2;
-			break;
-		case 1:
-			chestFacing = 5;
-			break;
-		case 2:
-			chestFacing = 3;
-			break;
-		case 3:
-			chestFacing = 4;
-			break;
-		default:
-			chestFacing = 0;
-			break;
-		}
+	       int direction = 0;
+           int facing = MathHelper.floor_double(entityLiving.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
+
+	        if (facing == 0) {
+	            direction = ForgeDirection.NORTH.ordinal();
+	        }
+	        else if (facing == 1) {
+	            direction = ForgeDirection.EAST.ordinal();
+	        }
+	        else if (facing == 2) {
+	            direction = ForgeDirection.SOUTH.ordinal();
+	        }
+	        else if (facing == 3) {
+	            direction = ForgeDirection.WEST.ordinal();
+	        }
+	    
 
 		TileEntity te = world.getBlockTileEntity(i, j, k);
 		if (te != null && te instanceof TileEntityRescueChest) {
-			((TileEntityRescueChest) te).setFacing(chestFacing);
+			((TileEntityRescueChest) te).setOrientation(direction);
 			world.markBlockForUpdate(i, j, k);
 		}
 

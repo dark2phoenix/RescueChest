@@ -8,12 +8,8 @@ import java.util.logging.Logger;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Property;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -27,20 +23,17 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
-import dark2phoenix.mods.rescuechest.block.BlockRescueChest;
+import dark2phoenix.mods.rescuechest.block.ModBlocks;
+import dark2phoenix.mods.rescuechest.configuration.ConfigurationHandler;
+import dark2phoenix.mods.rescuechest.configuration.ConfigurationSettings;
 import dark2phoenix.mods.rescuechest.core.Localization;
-import dark2phoenix.mods.rescuechest.core.StringUtils;
 import dark2phoenix.mods.rescuechest.core.Version;
 import dark2phoenix.mods.rescuechest.core.handlers.PlayerLivingDeathEventHandler;
 import dark2phoenix.mods.rescuechest.core.proxy.CommonProxy;
 import dark2phoenix.mods.rescuechest.gui.GuiHandler;
-import dark2phoenix.mods.rescuechest.item.ItemHotBar;
-import dark2phoenix.mods.rescuechest.item.ItemWoodenCoin;
+import dark2phoenix.mods.rescuechest.item.ModItems;
 import dark2phoenix.mods.rescuechest.lib.Reference;
 import dark2phoenix.mods.rescuechest.network.PacketHandler;
-import dark2phoenix.mods.rescuechest.tileentity.TileEntityRescueChest;
 
 @Mod(modid = "RescueChest", name = "Rescue Chest")
 @NetworkMod(channels = { "RescueChest" }, clientSideRequired = true, serverSideRequired = true, packetHandler = PacketHandler.class)
@@ -62,19 +55,6 @@ public class RescueChest {
     @Instance("RescueChest")
     public static RescueChest   instance;
 
-    public static final String  modid               = Reference.MOD_ID;
-
-    /* Setup block/item */
-    private int                 rescueChestBlockId;
-    private int                 hotbarItemId;
-    private int                 woodenCoinItemId;
-
-    /* Setup references to blocks/item */
-    public static Block         rescueChestBlock;
-    public static Item          hotbarItem;
-    public static Item          woodenCoinItem;
-
-    public static Configuration rescueChestConfig;
     private static int          rescueChestRenderID = RenderingRegistry.getNextAvailableRenderId();
 
     /**
@@ -101,57 +81,47 @@ public class RescueChest {
         logger.entering(sourceClass, sourceMethod, event);
         Version.init(event.getVersionProperties());
         event.getModMetadata().version = Version.fullVersionString();
-        Configuration rescueChestConfig = new Configuration(event.getSuggestedConfigurationFile());
         try {
-            rescueChestConfig.load();
-            rescueChestBlockId = rescueChestConfig.getBlock("RescueChest", 501).getInt(501);
-            hotbarItemId = rescueChestConfig.getItem("HotbarItem", 29775).getInt(29775);
-            woodenCoinItemId = rescueChestConfig.getItem("WoodenCoinItem", 29776).getInt(29776);
-            logger.logp(Level.FINE, sourceClass, sourceMethod, "Rescue Chest Block ID is " + rescueChestBlockId);
+            // Initialize the configuration
+            ConfigurationHandler.init(event.getSuggestedConfigurationFile());
         } catch (Exception e) {
             FMLLog.log(Level.SEVERE, e, "Rescue Chest could not load configuration");
-        } finally {
-            rescueChestConfig.save();
-        }
+        } 
+//        Property defaultLanguageProp = rescueChestConfig.get("general", "DefaultLanguage", "en_US");
+        Localization.addLocalization("/lang/rescuechest/", ConfigurationSettings.DEFAULT_LANGUAGE);
 
-        Property defaultLanguageProp = rescueChestConfig.get("general", "DefaultLanguage", "en_US");
-        Localization.addLocalization("/lang/rescuechest/", defaultLanguageProp.getString());
+        // Setup Blocks
+        ModBlocks.init();
 
+        // Setup Items
+        ModItems.init();
+        
+        // Register the Sound Handler (Client only)
+        proxy.registerSoundHandler();
+       
+        
         logger.exiting(sourceClass, sourceMethod);
     }
 
     @Init
     public void load(FMLInitializationEvent event) {
 
-        // Setup Blocks
-
-        rescueChestBlock = new BlockRescueChest(rescueChestBlockId);
-
-        GameRegistry.registerBlock(rescueChestBlock, "BlockRescueChest");
-        GameRegistry.registerTileEntity(TileEntityRescueChest.class, "TileEntityRescueChest");
-        LanguageRegistry.addName(rescueChestBlock, StringUtils.localize("block.rescuechest.name"));
-
+ 
+        // Register Tile Entities
+        proxy.initTileEntities();
+        
+        //Register Renderers
         proxy.registerTileEntitySpecialRenderer();
         proxy.registerRenderInformation();
 
-        // Setup Items
 
-        hotbarItem = new ItemHotBar(hotbarItemId);
-        LanguageRegistry.addName(hotbarItem, "Hotbar Item");
-
-        woodenCoinItem = new ItemWoodenCoin(woodenCoinItemId);
-        LanguageRegistry.addName(woodenCoinItem, StringUtils.localize("item.woodencoin.name"));
-
+        // Setup GUI's
         NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
-
-        // Define our ore dictionary resources so other variations of these
-        // elements will work
-        OreDictionary.registerOre("plankWood", new ItemStack(Block.planks));
-        OreDictionary.registerOre("ingotGold", new ItemStack(Item.ingotGold));
 
         // Register custom events
         MinecraftForge.EVENT_BUS.register(new PlayerLivingDeathEventHandler());
         MinecraftForge.EVENT_BUS.register(this);
+        
 
     }
 
@@ -166,7 +136,6 @@ public class RescueChest {
     @SuppressWarnings("unchecked")
     @PostInit
     public void postInit(FMLPostInitializationEvent event) {
-
         List<String> oreNameList = Arrays.asList(OreDictionary.getOreNames());
 
         // Define our ore dictionary resources so other variations of these
@@ -182,8 +151,7 @@ public class RescueChest {
             OreDictionary.registerOre("woodLog", new ItemStack(Block.wood));
         }
 
+
         // Recipes to add
-        CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(rescueChestBlock), true, new Object[] { "PPP", "PGP", "PPP", Character.valueOf('P'), "plankWood", Character.valueOf('G'), "ingotGold" }));
-        CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(woodenCoinItem), true, new Object[] { " P ", "PLP", " P ", Character.valueOf('P'), "plankWood", Character.valueOf('L'), "woodLog" }));
     }
 }

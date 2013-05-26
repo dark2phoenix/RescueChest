@@ -4,6 +4,13 @@ import dark2phoenix.mods.rescuechest.core.types.Inventory;
 
 public class Constants {
 
+    
+    /**
+     * Name of TileEntityRescueChest
+     */
+    public static final String TILE_ENTITY_RESCUE_CHEST_NAME = "TileEntityRescueChest";
+    
+    
     /**
      * Name of the primary NBTTagCompound that holds Rescue Chest Data
      */
@@ -45,5 +52,22 @@ public class Constants {
             return this.inventory.getName();
         }
     }
+    
+    public enum UpgradeCoinType {
+        WOOD(1), EARTH(4), METAL(8), DIMENSION(16);
+        
+        private int upgradeValue;
+        
+        private UpgradeCoinType(int startingUpgradeValue) {
+            this.upgradeValue = startingUpgradeValue;
+        }
+        
+        public int getUpgradeValue() {
+            return this.upgradeValue;
+        }
+        
+    }
+    
+    
 
 }
