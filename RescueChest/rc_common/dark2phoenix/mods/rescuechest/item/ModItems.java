@@ -16,9 +16,6 @@ public class ModItems {
     
     public static void init() {
 
-        hotbar = new ItemHotBar(Items.HOTBAR_ITEM_ID);
-        LanguageRegistry.addName(hotbar, "Hotbar Item");
-
         woodenCoin = new ItemWoodenCoin(Items.WOODEN_COIN_ID);
         LanguageRegistry.addName(woodenCoin, StringUtils.localize("item.woodencoin.name"));
         

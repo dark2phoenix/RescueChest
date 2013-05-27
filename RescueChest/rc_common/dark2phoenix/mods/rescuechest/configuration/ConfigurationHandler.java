@@ -44,7 +44,6 @@ public class ConfigurationHandler {
             Blocks.RESCUECHEST_ID = configuration.getBlock(Blocks.RESCUE_CHEST_NAME, Blocks.RESCUECHEST_DEFAULT).getInt(Blocks.RESCUECHEST_DEFAULT);
 
             /* Item configs */
-            Items.HOTBAR_ITEM_ID = configuration.getItem(Items.HOTBAR_ITEM_NAME, Items.HOTBAR_ITEM_DEFAULT).getInt(Items.HOTBAR_ITEM_DEFAULT);
             Items.WOODEN_COIN_ID= configuration.getItem(Items.WOODEN_COIN_NAME, Items.WOODEN_COIN_DEFAULT).getInt(Items.WOODEN_COIN_DEFAULT);
 
         }
