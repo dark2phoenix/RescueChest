@@ -28,6 +28,7 @@ import dark2phoenix.mods.rescuechest.configuration.ConfigurationHandler;
 import dark2phoenix.mods.rescuechest.configuration.ConfigurationSettings;
 import dark2phoenix.mods.rescuechest.core.Localization;
 import dark2phoenix.mods.rescuechest.core.Version;
+import dark2phoenix.mods.rescuechest.core.handlers.IconRegistryHandler;
 import dark2phoenix.mods.rescuechest.core.handlers.PlayerLivingDeathEventHandler;
 import dark2phoenix.mods.rescuechest.core.proxy.CommonProxy;
 import dark2phoenix.mods.rescuechest.gui.GuiHandler;
@@ -118,8 +119,11 @@ public class RescueChest {
         // Setup GUI's
         NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
 
-        // Register custom events
+        // Register Custom Event Handlers 
         MinecraftForge.EVENT_BUS.register(new PlayerLivingDeathEventHandler());
+        
+        MinecraftForge.EVENT_BUS.register(new IconRegistryHandler());
+        
         MinecraftForge.EVENT_BUS.register(this);
     }
 

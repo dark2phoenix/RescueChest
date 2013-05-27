@@ -6,9 +6,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dark2phoenix.mods.rescuechest.core.handlers.IconRegistryHandler;
 import dark2phoenix.mods.rescuechest.item.ItemHotBar;
 
 public class SlotHotBar extends Slot {
+    
+    
+    public static Icon active;
+    
+    public static Icon inactive;
+    
 
     private boolean isActive    = false;
 
@@ -49,7 +56,7 @@ public class SlotHotBar extends Slot {
      * Returns the icon index on items.png that is used as background image of the slot.
      */
     public Icon getBackgroundIconIndex() {
-        Icon icon = ItemHotBar.getHotbarIcon((isActive) ? 0 : 1);
+        Icon icon = (isActive) ? active : inactive;
         return icon;
     }
 
